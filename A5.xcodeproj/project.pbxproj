@@ -1,0 +1,557 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2A0000010000000000000001 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000001 /* main.m */; };
+		2A0000010000000000000002 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000002 /* AppDelegate.m */; };
+		2A0000010000000000000003 /* A5MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000003 /* A5MainWindowController.m */; };
+		2A0000010000000000000004 /* A5MessageDialogController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000004 /* A5MessageDialogController.m */; };
+		2A0000010000000000000005 /* A5DeviceData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000005 /* A5DeviceData.m */; };
+		2A0000010000000000000006 /* A5DeviceModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000006 /* A5DeviceModelMapper.m */; };
+		2A0000010000000000000007 /* A5ActivationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000007 /* A5ActivationService.m */; };
+		2A0000010000000000000008 /* A5CommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000008 /* A5CommandExecutor.m */; };
+		2A0000010000000000000009 /* A5DeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000009 /* A5DeviceManager.m */; };
+		2A000001000000000000000A /* A5ProcessMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000A /* A5ProcessMonitor.m */; };
+		2A000001000000000000000B /* A5ColorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000B /* A5ColorHelper.m */; };
+		2A000001000000000000000C /* A5Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000C /* A5Constants.m */; };
+		2A000001000000000000000D /* A5GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000D /* A5GradientButton.m */; };
+		2A000001000000000000000E /* A5LogTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000E /* A5LogTextView.m */; };
+		2A000001000000000000000F /* A5ProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000F /* A5ProgressBar.m */; };
+		2A0000010000000000000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C0000010000000000000001 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2B0000010000000000000001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2B0000010000000000000002 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2B0000010000000000000021 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2B0000010000000000000003 /* A5MainWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5MainWindowController.m; sourceTree = "<group>"; };
+		2B0000010000000000000031 /* A5MainWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5MainWindowController.h; sourceTree = "<group>"; };
+		2B0000010000000000000004 /* A5MessageDialogController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5MessageDialogController.m; sourceTree = "<group>"; };
+		2B0000010000000000000041 /* A5MessageDialogController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5MessageDialogController.h; sourceTree = "<group>"; };
+		2B0000010000000000000005 /* A5DeviceData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5DeviceData.m; sourceTree = "<group>"; };
+		2B0000010000000000000051 /* A5DeviceData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5DeviceData.h; sourceTree = "<group>"; };
+		2B0000010000000000000006 /* A5DeviceModelMapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5DeviceModelMapper.m; sourceTree = "<group>"; };
+		2B0000010000000000000061 /* A5DeviceModelMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5DeviceModelMapper.h; sourceTree = "<group>"; };
+		2B0000010000000000000007 /* A5ActivationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5ActivationService.m; sourceTree = "<group>"; };
+		2B0000010000000000000071 /* A5ActivationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ActivationService.h; sourceTree = "<group>"; };
+		2B0000010000000000000008 /* A5CommandExecutor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5CommandExecutor.m; sourceTree = "<group>"; };
+		2B0000010000000000000081 /* A5CommandExecutor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5CommandExecutor.h; sourceTree = "<group>"; };
+		2B0000010000000000000009 /* A5DeviceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5DeviceManager.m; sourceTree = "<group>"; };
+		2B0000010000000000000091 /* A5DeviceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5DeviceManager.h; sourceTree = "<group>"; };
+		2B000001000000000000000A /* A5ProcessMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5ProcessMonitor.m; sourceTree = "<group>"; };
+		2B00000100000000000000A1 /* A5ProcessMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ProcessMonitor.h; sourceTree = "<group>"; };
+		2B000001000000000000000B /* A5ColorHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5ColorHelper.m; sourceTree = "<group>"; };
+		2B00000100000000000000B1 /* A5ColorHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ColorHelper.h; sourceTree = "<group>"; };
+		2B000001000000000000000C /* A5Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5Constants.m; sourceTree = "<group>"; };
+		2B00000100000000000000C1 /* A5Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5Constants.h; sourceTree = "<group>"; };
+		2B000001000000000000000D /* A5GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5GradientButton.m; sourceTree = "<group>"; };
+		2B00000100000000000000D1 /* A5GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5GradientButton.h; sourceTree = "<group>"; };
+		2B000001000000000000000E /* A5LogTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5LogTextView.m; sourceTree = "<group>"; };
+		2B00000100000000000000E1 /* A5LogTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5LogTextView.h; sourceTree = "<group>"; };
+		2B000001000000000000000F /* A5ProgressBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5ProgressBar.m; sourceTree = "<group>"; };
+		2B00000100000000000000F1 /* A5ProgressBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ProgressBar.h; sourceTree = "<group>"; };
+		2C0000010000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D0000010000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2D0000010000000000000002 /* A5.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = A5.entitlements; sourceTree = "<group>"; };
+		9D0000010000000000000001 /* A5.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = A5.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9A0000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9B0000010000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				9B0000010000000000000002 /* A5 */,
+				9B0000010000000000000099 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000002 /* A5 */ = {
+			isa = PBXGroup;
+			children = (
+				2B0000010000000000000001 /* main.m */,
+				2B0000010000000000000002 /* AppDelegate.m */,
+				2B0000010000000000000021 /* AppDelegate.h */,
+				9B0000010000000000000003 /* Controllers */,
+				9B0000010000000000000004 /* Models */,
+				9B0000010000000000000005 /* Services */,
+				9B0000010000000000000006 /* Utilities */,
+				9B0000010000000000000007 /* Views */,
+				9B0000010000000000000008 /* Resources */,
+				9B0000010000000000000009 /* Supporting Files */,
+			);
+			path = A5;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000003 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2B0000010000000000000003 /* A5MainWindowController.m */,
+				2B0000010000000000000031 /* A5MainWindowController.h */,
+				2B0000010000000000000004 /* A5MessageDialogController.m */,
+				2B0000010000000000000041 /* A5MessageDialogController.h */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2B0000010000000000000005 /* A5DeviceData.m */,
+				2B0000010000000000000051 /* A5DeviceData.h */,
+				2B0000010000000000000006 /* A5DeviceModelMapper.m */,
+				2B0000010000000000000061 /* A5DeviceModelMapper.h */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2B0000010000000000000007 /* A5ActivationService.m */,
+				2B0000010000000000000071 /* A5ActivationService.h */,
+				2B0000010000000000000008 /* A5CommandExecutor.m */,
+				2B0000010000000000000081 /* A5CommandExecutor.h */,
+				2B0000010000000000000009 /* A5DeviceManager.m */,
+				2B0000010000000000000091 /* A5DeviceManager.h */,
+				2B000001000000000000000A /* A5ProcessMonitor.m */,
+				2B00000100000000000000A1 /* A5ProcessMonitor.h */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000006 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				2B000001000000000000000B /* A5ColorHelper.m */,
+				2B00000100000000000000B1 /* A5ColorHelper.h */,
+				2B000001000000000000000C /* A5Constants.m */,
+				2B00000100000000000000C1 /* A5Constants.h */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000007 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2B000001000000000000000D /* A5GradientButton.m */,
+				2B00000100000000000000D1 /* A5GradientButton.h */,
+				2B000001000000000000000E /* A5LogTextView.m */,
+				2B00000100000000000000E1 /* A5LogTextView.h */,
+				2B000001000000000000000F /* A5ProgressBar.m */,
+				2B00000100000000000000F1 /* A5ProgressBar.h */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2C0000010000000000000001 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000009 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2D0000010000000000000001 /* Info.plist */,
+				2D0000010000000000000002 /* A5.entitlements */,
+			);
+			name = "Supporting Files";
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9B0000010000000000000099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D0000010000000000000001 /* A5.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9C0000010000000000000001 /* A5 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E0000010000000000000001 /* Build configuration list for PBXNativeTarget "A5" */;
+			buildPhases = (
+				9A0000010000000000000002 /* Sources */,
+				9A0000010000000000000001 /* Frameworks */,
+				9A0000010000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = A5;
+			productName = A5;
+			productReference = 9D0000010000000000000001 /* A5.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9B0000010000000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					9C0000010000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 9E0000010000000000000000 /* Build configuration list for PBXProject "A5" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9B0000010000000000000001;
+			productRefGroup = 9B0000010000000000000099 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9C0000010000000000000001 /* A5 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9A0000010000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A0000010000000000000010 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9A0000010000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A0000010000000000000001 /* main.m in Sources */,
+				2A0000010000000000000002 /* AppDelegate.m in Sources */,
+				2A0000010000000000000003 /* A5MainWindowController.m in Sources */,
+				2A0000010000000000000004 /* A5MessageDialogController.m in Sources */,
+				2A0000010000000000000005 /* A5DeviceData.m in Sources */,
+				2A0000010000000000000006 /* A5DeviceModelMapper.m in Sources */,
+				2A0000010000000000000007 /* A5ActivationService.m in Sources */,
+				2A0000010000000000000008 /* A5CommandExecutor.m in Sources */,
+				2A0000010000000000000009 /* A5DeviceManager.m in Sources */,
+				2A000001000000000000000A /* A5ProcessMonitor.m in Sources */,
+				2A000001000000000000000B /* A5ColorHelper.m in Sources */,
+				2A000001000000000000000C /* A5Constants.m in Sources */,
+				2A000001000000000000000D /* A5GradientButton.m in Sources */,
+				2A000001000000000000000E /* A5LogTextView.m in Sources */,
+				2A000001000000000000000F /* A5ProgressBar.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9F0000010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "A5/Supporting Files/A5.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "A5/Supporting Files/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = A5;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a5.A5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		9F0000010000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "A5/Supporting Files/A5.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "A5/Supporting Files/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = A5;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a5.A5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		9F0000010000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9F0000010000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9E0000010000000000000000 /* Build configuration list for PBXProject "A5" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F0000010000000000000003 /* Debug */,
+				9F0000010000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9E0000010000000000000001 /* Build configuration list for PBXNativeTarget "A5" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F0000010000000000000001 /* Debug */,
+				9F0000010000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9B0000010000000000000000 /* Project object */;
+}
