@@ -54,7 +54,7 @@ case $choice in
 
         echo ""
         echo "================================================"
-        echo "✅ Both versions built successfully!"
+        echo "SUCCESS: Both versions built successfully!"
         echo "================================================"
         echo ""
         ls -lh dist/*.zip
@@ -66,5 +66,5 @@ case $choice in
 esac
 
 echo ""
-echo "✅ Build complete!"
+echo "SUCCESS: Build complete!"
 echo ""

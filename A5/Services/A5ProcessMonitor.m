@@ -88,8 +88,8 @@
 
     self.isMonitoring = YES;
 
-    [self notifyDelegate:@"🔒 Bypass Process is Ready"];
-    [self notifyDelegate:@"🛡️ Background process protection activated"];
+    [self notifyDelegate:@"Bypass Process is Ready"];
+    [self notifyDelegate:@"Background process protection activated"];
 
     // Start monitoring loop on background queue
     dispatch_async(self.monitoringQueue, ^{
@@ -103,7 +103,7 @@
     }
 
     self.isMonitoring = NO;
-    [self notifyDelegate:@"🔓 .. 🔓"];
+    [self notifyDelegate:@"Protection disabled"];
 }
 
 - (BOOL)killProcessByName:(NSString *)processName {
@@ -261,10 +261,10 @@
             }
         });
 
-        [self notifyDelegate:[NSString stringWithFormat:@"❌ Blocked: %@ (PID: %d)", processName, pid]];
+        [self notifyDelegate:[NSString stringWithFormat:@"BLOCKED: %@ (PID: %d)", processName, pid]];
         return YES;
     } else {
-        [self notifyDelegate:[NSString stringWithFormat:@"⚠️ Could not terminate: %@ (PID: %d)", processName, pid]];
+        [self notifyDelegate:[NSString stringWithFormat:@"WARNING: Could not terminate: %@ (PID: %d)", processName, pid]];
         return NO;
     }
 }

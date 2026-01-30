@@ -30,12 +30,12 @@ for tool in "${TOOLS[@]}"; do
     X86_64_FILE="$X86_64_DIR/$tool"
     
     if [ ! -f "$ARM64_FILE" ]; then
-        echo "  ❌ ARM64 version not found: $ARM64_FILE"
+        echo "  ERROR: ARM64 version not found: $ARM64_FILE"
         continue
     fi
     
     if [ ! -f "$X86_64_FILE" ]; then
-        echo "  ❌ x86_64 version not found: $X86_64_FILE"
+        echo "  ERROR: x86_64 version not found: $X86_64_FILE"
         continue
     fi
     
@@ -44,12 +44,12 @@ for tool in "${TOOLS[@]}"; do
     X86_ARCH=$(lipo -info "$X86_64_FILE" | grep -o "x86_64" || echo "")
     
     if [ -z "$ARM_ARCH" ]; then
-        echo "  ⚠️  $ARM64_FILE is not ARM64!"
+        echo "  WARNING:  $ARM64_FILE is not ARM64!"
         continue
     fi
     
     if [ -z "$X86_ARCH" ]; then
-        echo "  ⚠️  $X86_64_FILE is not x86_64!"
+        echo "  WARNING:  $X86_64_FILE is not x86_64!"
         continue
     fi
     
@@ -68,7 +68,7 @@ for tool in "${TOOLS[@]}"; do
     
     chmod +x "$ARM64_FILE"
     
-    echo "  ✅ Created universal binary"
+    echo "  SUCCESS: Created universal binary"
     lipo -info "$ARM64_FILE"
     echo ""
 done
@@ -81,7 +81,7 @@ fi
 
 echo ""
 echo "================================================"
-echo "✅ Universal binaries created!"
+echo "SUCCESS: Universal binaries created!"
 echo "================================================"
 echo ""
 echo "Your tools now support both ARM64 and x86_64 Macs!"

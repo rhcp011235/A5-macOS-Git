@@ -14,6 +14,7 @@
 
 @property (assign, nonatomic) BOOL isCancelled;
 @property (strong, nonatomic) dispatch_queue_t activationQueue;
+@property (strong, nonatomic, nullable) NSTask *phpServerTask;
 
 @end
 
@@ -46,13 +47,21 @@
 - (void)cancelActivation {
     self.isCancelled = YES;
     [self notifyLog:@"Activation cancelled by user"];
+    [self stopPHPServer];
 }
 
 #pragma mark - Private Methods - Activation Workflow
 
 - (void)performActivationWorkflow:(NSString *)udid {
+    // Step 0: Start local PHP server for backend
+    if (![self startPHPServer]) {
+        [self notifyCompletion:NO message:@"Failed to start backend server"];
+        return;
+    }
+
     // Step 1: Transfer payload (20%)
     if (![self transferPayload:udid]) {
+        [self stopPHPServer];
         return;
     }
 
@@ -272,6 +281,62 @@
     }];
 }
 
+#pragma mark - PHP Server Management
+
+- (BOOL)startPHPServer {
+    // Get backend directory path from bundle
+    NSString *backendPath = [[NSBundle mainBundle] pathForResource:@"backend" ofType:nil inDirectory:@"Resources"];
+
+    if (!backendPath || ![[NSFileManager defaultManager] fileExistsAtPath:backendPath]) {
+        [self notifyLog:@"Backend server files not found in bundle"];
+        return NO;
+    }
+
+    // Check if PHP is available
+    NSString *phpPath = @"/usr/bin/php";
+    if (![[NSFileManager defaultManager] fileExistsAtPath:phpPath]) {
+        [self notifyLog:@"PHP not found on system"];
+        return NO;
+    }
+
+    // Stop any existing server
+    [self stopPHPServer];
+
+    // Create NSTask to run PHP built-in server
+    self.phpServerTask = [[NSTask alloc] init];
+    self.phpServerTask.launchPath = phpPath;
+    self.phpServerTask.arguments = @[@"-S", @"localhost:8080", @"-t", backendPath];
+    self.phpServerTask.currentDirectoryPath = backendPath;
+
+    // Redirect output to avoid hanging
+    NSPipe *outputPipe = [NSPipe pipe];
+    NSPipe *errorPipe = [NSPipe pipe];
+    self.phpServerTask.standardOutput = outputPipe;
+    self.phpServerTask.standardError = errorPipe;
+
+    @try {
+        [self.phpServerTask launch];
+        [self notifyLog:@"Backend server started on localhost:8080"];
+
+        // Wait a moment for server to start
+        [NSThread sleepForTimeInterval:1.0];
+
+        return YES;
+    } @catch (NSException *exception) {
+        [self notifyLog:[NSString stringWithFormat:@"Failed to start backend server: %@", exception.reason]];
+        self.phpServerTask = nil;
+        return NO;
+    }
+}
+
+- (void)stopPHPServer {
+    if (self.phpServerTask && self.phpServerTask.isRunning) {
+        [self.phpServerTask terminate];
+        [self notifyLog:@"Backend server stopped"];
+    }
+    self.phpServerTask = nil;
+}
+
 #pragma mark - Delegate Notifications
 
 - (void)notifyProgress:(NSInteger)percentage message:(NSString *)message {
@@ -283,6 +348,9 @@
 }
 
 - (void)notifyCompletion:(BOOL)success message:(NSString *)message {
+    // Stop PHP server when activation completes or fails
+    [self stopPHPServer];
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([self.delegate respondsToSelector:@selector(activationCompleted:message:)]) {
             [self.delegate activationCompleted:success message:message];

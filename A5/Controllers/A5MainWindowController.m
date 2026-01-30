@@ -67,7 +67,7 @@
     // [self.processMonitor startMonitoring];
 
     [self addLog:@"Device monitoring started (checking every 3 seconds)" level:A5LogLevelInfo];
-    [self addLog:@"⚠️ Process monitor DISABLED (debug mode - no anti-debug protection)" level:A5LogLevelWarning];
+    [self addLog:@"WARNING: Process monitor DISABLED (debug mode - no anti-debug protection)" level:A5LogLevelWarning];
     [self addLog:@"Waiting for device connection..." level:A5LogLevelDefault];
 
     // Do an immediate device check
@@ -103,7 +103,7 @@
     // [self.processMonitor startMonitoring];
 
     [self addLog:@"Device monitoring started (checking every 3 seconds)" level:A5LogLevelInfo];
-    [self addLog:@"⚠️ Process monitor DISABLED (debug mode - no anti-debug protection)" level:A5LogLevelWarning];
+    [self addLog:@"WARNING: Process monitor DISABLED (debug mode - no anti-debug protection)" level:A5LogLevelWarning];
     [self addLog:@"Waiting for device connection..." level:A5LogLevelDefault];
 
     // Do an immediate device check
@@ -454,7 +454,7 @@
     }
 
     if (success) {
-        [self addLog:@"✅ Activation successful!" level:A5LogLevelSuccess];
+        [self addLog:@"Activation successful!" level:A5LogLevelSuccess];
         [self updateProgress:100 message:@"Activation completed!"];
 
         [A5MessageDialogController showDialogWithTitle:@"Success" message:message];
@@ -468,7 +468,7 @@
             }];
         }
     } else {
-        [self addLog:[@"❌ " stringByAppendingString:message] level:A5LogLevelError];
+        [self addLog:[@"ERROR: " stringByAppendingString:message] level:A5LogLevelError];
         [self updateProgress:0 message:message];
 
         [A5MessageDialogController showDialogWithTitle:@"Activation Failed" message:message];
