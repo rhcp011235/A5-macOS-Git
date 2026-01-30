@@ -1,4 +1,4 @@
-# A5 iOS Device Activation Bypass Tool By RHCP011235
+# A5 iOS Device Activation Bypass Tool
 
 A macOS application for bypassing iCloud activation on A5 chip iOS devices.
 
@@ -8,20 +8,35 @@ This tool provides activation bypass functionality for legacy A5 chip devices, a
 
 ## Supported Devices
 
-This tool ONLY works with A5 chip devices:
+This tool ONLY works with A5 chip devices running specific iOS versions:
 
+### Devices
 - iPhone 4S (iPhone4,1)
-- iPhone 5 (iPhone5,1, iPhone5,2)
-- iPhone 5c (iPhone5,3, iPhone5,4)
-- iPad 2 (iPad2,1, iPad2,2, iPad2,3, iPad2,4)
-- iPad Mini 1st Generation (iPad2,5, iPad2,6, iPad2,7)
+- iPad 2 WiFi (iPad2,1)
+- iPad 2 GSM (iPad2,2)
+- iPad 2 CDMA (iPad2,3)
+- iPad 2 Mid 2012 (iPad2,4)
+- iPad Mini WiFi (iPad2,5)
+- iPad Mini GSM (iPad2,6)
+- iPad Mini CDMA (iPad2,7)
+- iPad 3 WiFi (iPad3,1)
+- iPad 3 GSM (iPad3,2)
+- iPad 3 CDMA (iPad3,3)
+- iPod touch 5th generation (iPod5,1)
+
+### iOS Versions
+- iOS 8.4.1 (WiFi models only, cellular models have limited support)
+- iOS 9.3.5
+- iOS 9.3.6
+
+**Note**: iPhone 5, 5c, 5s and newer devices use A6+ chips and are NOT supported by this tool.
 
 ## System Requirements
 
 - macOS 10.14 (Mojave) or later
 - Works on both Intel and Apple Silicon Macs
 - Xcode 12.0 or later (for building from source)
-- libimobiledevice (brew install libimobiledevice)
+- PHP (pre-installed on macOS)
 
 ## Features
 
@@ -33,20 +48,17 @@ This tool ONLY works with A5 chip devices:
 - Clean logging interface
 - Device model identification
 - iOS version detection
+- Local backend server (no internet required for activation)
+- Offline operation
 
 ## Installation
 
 ### For Users
 
-1. Install libimobiledevice:
-   ```bash
-   brew install libimobiledevice
-   ```
-
-2. Download the latest release
-3. Extract the ZIP file
-4. Right-click A5.app and select "Open"
-5. Click "Open" in the security dialog (required for unsigned apps)
+1. Download the latest release
+2. Extract the ZIP file
+3. Right-click A5.app and select "Open"
+4. Click "Open" in the security dialog (required for unsigned apps)
 
 ### For Developers
 
@@ -56,12 +68,7 @@ This tool ONLY works with A5 chip devices:
    cd A5-macOS
    ```
 
-2. Install dependencies:
-   ```bash
-   brew install libimobiledevice
-   ```
-
-3. Build the project:
+2. Build the project:
    ```bash
    ./build.sh
    ```
@@ -72,6 +79,7 @@ This tool ONLY works with A5 chip devices:
 
 ```bash
 ./build.sh
+./copy_resources.sh
 open build/Build/Products/Debug/A5.app
 ```
 
@@ -87,7 +95,7 @@ This creates a distribution-ready package in `dist/` directory.
 
 - `build.sh` - Quick debug build for development
 - `package_for_distribution.sh` - Release build with resources
-- `copy_resources.sh` - Copies tools and payloads to app bundle
+- `copy_resources.sh` - Copies tools, payloads, and backend to app bundle
 - `make_universal_tools.sh` - Creates universal binaries from separate architectures
 - `build_release.sh` - Interactive build menu
 
@@ -97,16 +105,18 @@ This creates a distribution-ready package in `dist/` directory.
 2. Connect your A5 device via USB
 3. Trust the computer on your device if prompted
 4. Wait for device detection (automatic, takes ~3 seconds)
-5. Ensure device is connected to WiFi
+5. Ensure device is on the Setup Assistant screen (not yet activated)
 6. Click "Activate Your Device"
 7. Wait for the activation process to complete (3-5 minutes)
 
 The application will:
+- Start a local backend server automatically
 - Detect the connected device
-- Verify it's an A5 chip device
+- Verify it's an A5 chip device with supported iOS version
 - Display device model and iOS version
 - Perform activation bypass
 - Show real-time progress
+- Stop the backend server when complete
 
 ## Project Structure
 
@@ -120,7 +130,8 @@ A5-macOS/
 │   ├── Utilities/            # Helper classes
 │   ├── Resources/
 │   │   ├── Tools/           # libimobiledevice binaries (universal)
-│   │   ├── Payloads/        # Activation payloads
+│   │   ├── Payloads/        # Activation payload (SQLite database)
+│   │   ├── backend/         # PHP server and device PLISTs
 │   │   └── Assets.xcassets/ # App icons and assets
 │   └── Supporting Files/     # Info.plist, etc.
 ├── A5.xcodeproj/            # Xcode project
@@ -140,7 +151,7 @@ The application uses a programmatic UI approach without XIB/Storyboard files:
 
 - `A5MainWindowController` - Main application window and UI
 - `A5DeviceManager` - USB device detection and monitoring
-- `A5ActivationService` - Activation bypass implementation
+- `A5ActivationService` - Activation bypass implementation with PHP server management
 - `A5CommandExecutor` - Executes libimobiledevice commands
 - `A5DeviceModelMapper` - Maps device identifiers to models
 
@@ -158,50 +169,77 @@ All binaries are built as universal (ARM64 + x86_64):
 The application uses libimobiledevice tools:
 - `idevice_id` - Lists connected devices
 - `ideviceinfo` - Retrieves device information
-- `idevicediagnostics` - Device diagnostics
+- `idevicediagnostics` - Device diagnostics and MobileGestalt queries
+- `afcclient` - File transfer to device
 
 ### Activation Process
 
-1. Verifies device is A5 chip
-2. Checks iOS version compatibility
-3. Executes activation bypass sequence
-4. Monitors process status
-5. Verifies successful activation
+The activation process uses a local backend server for complete offline operation:
+
+1. Application starts local PHP server on localhost:8080
+2. Uploads SQLite payload to device (/Downloads/downloads.28.sqlitedb)
+3. Device restarts and reads the payload
+4. Device contacts the local backend server
+5. PHP server serves device-specific patched PLIST based on model and iOS version
+6. Device updates MobileGestalt cache with patched data
+7. Second device restart
+8. Verification of MobileGestalt keys (hactivation, ShouldHactivate)
+9. Final restart
+10. Application stops the backend server
+11. Device boots activated
+
+### Backend Server
+
+The application includes a built-in backend server system:
+- PHP server runs locally during activation (no internet required)
+- 31 device/iOS-specific patched PLIST files
+- Serves correct PLIST based on device User-Agent
+- Automatic start/stop during activation process
 
 ## Troubleshooting
 
 ### Device Not Detected
 
-- Ensure libimobiledevice is installed: `brew install libimobiledevice`
 - Check USB connection
 - Trust the computer on your device
 - Try unplugging and reconnecting
+- Restart the application
 
 ### Device Not Supported
 
 - Only A5 chip devices are supported
-- Verify your device model in the supported list
+- Verify your device model in the supported list above
+- Check iOS version is 8.4.1, 9.3.5, or 9.3.6
 - Newer devices (A6+) will not work
 
 ### Activation Fails
 
-- Ensure device is connected to WiFi
+- Ensure device is on Setup Assistant screen (not yet activated)
 - Check device is unlocked
-- Verify iOS version is compatible
+- Verify iOS version is supported
 - Try restarting the application
+- Check logs for backend server errors
 
 ### Build Issues
 
 - Ensure Xcode is installed
 - Run `xcode-select --install` to install command line tools
 - Clean build folder: `rm -rf build`
+- Ensure PHP is available: `which php`
+
+### Backend Server Issues
+
+- Port 8080 must be available: `lsof -i :8080`
+- PHP must be installed (default on macOS)
+- Check app logs for "Backend server started" message
 
 ## Security & Privacy
 
-- No data is collected or transmitted
+- No data is collected or transmitted to external servers
 - All processing happens locally on your Mac
 - Device information stays on your machine
-- No internet connection required (except for device WiFi)
+- Backend server runs locally (no internet connection required)
+- Completely offline activation process
 
 ## License
 
@@ -220,7 +258,7 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 ## Acknowledgments
 
 - libimobiledevice project for iOS device communication
-- Hikari LLVM for obfuscation support (optional)
+- A5_Bypass_OSS project for backend server implementation reference
 - A5 community for research and testing
 
 ## Author

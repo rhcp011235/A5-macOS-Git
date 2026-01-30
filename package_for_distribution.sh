@@ -27,10 +27,10 @@ else
 fi
 
 if [ "$IS_UNIVERSAL" = "1" ]; then
-    echo "✅ Tools are UNIVERSAL (ARM64 + x86_64) - will work on all Macs"
+    echo "SUCCESS: Tools are UNIVERSAL (ARM64 + x86_64) - will work on all Macs"
     ARCH_SUFFIX="-Universal"
 else
-    echo "⚠️  Tools are $TOOL_ARCH ONLY"
+    echo "WARNING:  Tools are $TOOL_ARCH ONLY"
     if [ "$TOOL_ARCH" = "arm64" ]; then
         echo "   App will ONLY work on Apple Silicon Macs (M1/M2/M3/M4)"
         ARCH_SUFFIX="-ARM64"
@@ -58,12 +58,12 @@ xcodebuild -project A5.xcodeproj \
            | grep -E "BUILD|succeed|fail|error|warning" || true
 
 if [ ! -d "build/Build/Products/Release/A5.app" ]; then
-    echo "❌ Build failed!"
+    echo "ERROR: Build failed!"
     exit 1
 fi
 
 echo ""
-echo "✅ Build succeeded!"
+echo "SUCCESS: Build succeeded!"
 
 # Copy resources
 echo ""
@@ -164,7 +164,7 @@ cd ..
 
 echo ""
 echo "================================================"
-echo "✅ Distribution package created!"
+echo "SUCCESS: Distribution package created!"
 echo "================================================"
 echo ""
 echo "Location: dist/$ZIP_NAME"
@@ -173,7 +173,7 @@ echo ""
 echo "Architecture: $TOOL_ARCH$ARCH_SUFFIX"
 if [ "$IS_UNIVERSAL" != "1" ]; then
     echo ""
-    echo "⚠️  IMPORTANT: This build will ONLY work on $TOOL_ARCH Macs!"
+    echo "WARNING:  IMPORTANT: This build will ONLY work on $TOOL_ARCH Macs!"
     echo ""
     echo "To create a universal build:"
     echo "  ./create_universal_tools.sh"
