@@ -52,7 +52,7 @@ This tool ONLY works with A5 chip devices:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/A5-macOS.git
+   git clone https://github.com/rhcp011235/A5-macOS.git
    cd A5-macOS
    ```
 
