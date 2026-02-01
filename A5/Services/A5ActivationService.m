@@ -123,17 +123,17 @@
         return NO;
     }
 
-    // Try multiple paths - Hello screen has restricted AFC access
+    // Use relative path like original Python implementation
+    // AFC relative paths are relative to Media directory
     NSArray *targetPaths = @[
-        @"/PublicStaging/downloads.28.sqlitedb",
-        @"/Downloads/downloads.28.sqlitedb",
-        @"/var/mobile/Media/Downloads/downloads.28.sqlitedb"
+        @"Downloads/downloads.28.sqlitedb",
+        @"PublicStaging/downloads.28.sqlitedb"
     ];
 
     for (NSString *targetPath in targetPaths) {
         [self notifyLog:[NSString stringWithFormat:@"Trying path: %@", targetPath]];
 
-        NSArray *arguments = @[@"put", @"--udid", udid, tempPath, targetPath];
+        NSArray *arguments = @[@"--udid", udid, @"put", tempPath, targetPath];
 
         __block BOOL success = NO;
         __block NSString *errorMessage = nil;
