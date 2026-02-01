@@ -133,7 +133,7 @@
     for (NSString *targetPath in targetPaths) {
         [self notifyLog:[NSString stringWithFormat:@"Trying path: %@", targetPath]];
 
-        NSArray *arguments = @[@"--udid", udid, @"put", tempPath, targetPath];
+        NSArray *arguments = @[@"-u", udid, @"put", tempPath, targetPath];
 
         __block BOOL success = NO;
         __block NSString *errorMessage = nil;
