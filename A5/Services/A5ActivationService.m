@@ -135,9 +135,14 @@
                             arguments:arguments
                            completion:^(NSString *output, NSString *error, NSError *executionError) {
         if (executionError) {
-            errorMessage = [NSString stringWithFormat:@"AFC transfer failed: %@", executionError.localizedDescription];
+            NSInteger exitCode = executionError.code;
+            if (exitCode == 6) {
+                errorMessage = @"Access denied. Please unlock device, tap Trust on device, and try again.";
+            } else {
+                errorMessage = [NSString stringWithFormat:@"AFC transfer failed (code %ld). Unlock device and tap Trust.", (long)exitCode];
+            }
         } else if ([error containsString:@"ERROR"] || [error containsString:@"error"]) {
-            errorMessage = @"AFC file transfer error";
+            errorMessage = @"AFC file transfer error. Make sure device is unlocked and trusted.";
         } else {
             success = YES;
             [self notifyLog:@"Payload transferred successfully"];
