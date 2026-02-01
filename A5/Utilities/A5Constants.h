@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)ideviceinfoTool;                 // "ideviceinfo"
 + (NSString *)idevicediagnosticsTool;          // "idevicediagnostics"
 + (NSString *)afcclientTool;                   // "afcclient"
++ (NSString *)iproxyTool;                      // "iproxy"
 
 // MARK: - Progress Percentages
 + (NSInteger)progressPayloadTransfer;          // 20

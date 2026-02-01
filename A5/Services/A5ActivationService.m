@@ -15,6 +15,7 @@
 @property (assign, nonatomic) BOOL isCancelled;
 @property (strong, nonatomic) dispatch_queue_t activationQueue;
 @property (strong, nonatomic, nullable) NSTask *phpServerTask;
+@property (strong, nonatomic, nullable) NSTask *iproxyTask;
 
 @end
 
@@ -299,8 +300,35 @@
         return NO;
     }
 
-    // Stop any existing server
+    // Get iproxy path from bundle or system
+    NSString *iproxyPath = [A5CommandExecutor pathForTool:[A5Constants iproxyTool]];
+    if (!iproxyPath) {
+        [self notifyLog:@"iproxy not found in bundle"];
+        return NO;
+    }
+
+    // Stop any existing servers
     [self stopPHPServer];
+
+    // Start iproxy for USB port forwarding (device port 8080 -> Mac port 8080)
+    self.iproxyTask = [[NSTask alloc] init];
+    self.iproxyTask.launchPath = iproxyPath;
+    self.iproxyTask.arguments = @[@"8080:8080"];
+
+    NSPipe *iproxyOutputPipe = [NSPipe pipe];
+    NSPipe *iproxyErrorPipe = [NSPipe pipe];
+    self.iproxyTask.standardOutput = iproxyOutputPipe;
+    self.iproxyTask.standardError = iproxyErrorPipe;
+
+    @try {
+        [self.iproxyTask launch];
+        [self notifyLog:@"USB port forwarding started (iproxy 8080:8080)"];
+        [NSThread sleepForTimeInterval:0.5];
+    } @catch (NSException *exception) {
+        [self notifyLog:[NSString stringWithFormat:@"Failed to start iproxy: %@", exception.reason]];
+        self.iproxyTask = nil;
+        return NO;
+    }
 
     // Create NSTask to run PHP built-in server
     self.phpServerTask = [[NSTask alloc] init];
@@ -324,7 +352,7 @@
         return YES;
     } @catch (NSException *exception) {
         [self notifyLog:[NSString stringWithFormat:@"Failed to start backend server: %@", exception.reason]];
-        self.phpServerTask = nil;
+        [self stopPHPServer];
         return NO;
     }
 }
@@ -335,6 +363,12 @@
         [self notifyLog:@"Backend server stopped"];
     }
     self.phpServerTask = nil;
+
+    if (self.iproxyTask && self.iproxyTask.isRunning) {
+        [self.iproxyTask terminate];
+        [self notifyLog:@"USB port forwarding stopped"];
+    }
+    self.iproxyTask = nil;
 }
 
 #pragma mark - Delegate Notifications

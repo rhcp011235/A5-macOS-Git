@@ -95,6 +95,10 @@
     return @"afcclient";
 }
 
++ (NSString *)iproxyTool {
+    return @"iproxy";
+}
+
 // MARK: - Progress Percentages
 + (NSInteger)progressPayloadTransfer {
     return 20;
