@@ -194,6 +194,7 @@
 				9A0000010000000000000002 /* Sources */,
 				9A0000010000000000000001 /* Frameworks */,
 				9A0000010000000000000003 /* Resources */,
+				9A0000010000000000000004 /* Copy Resources Script */,
 			);
 			buildRules = (
 			);
@@ -246,6 +247,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9A0000010000000000000004 /* Copy Resources Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Resources Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "\"${PROJECT_DIR}/copy_resources.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9A0000010000000000000002 /* Sources */ = {
