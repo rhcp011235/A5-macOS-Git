@@ -24,6 +24,7 @@
 		2A000001000000000000000F /* A5ProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000F /* A5ProgressBar.m */; };
 		2A0000010000000000000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C0000010000000000000001 /* Assets.xcassets */; };
 		2A0000010000000000000011 /* A5BackendServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000011 /* A5BackendServer.m */; };
+		2A0000010000000000000012 /* A5AFCClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000012 /* A5AFCClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,8 @@
 		2B00000100000000000000F1 /* A5ProgressBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ProgressBar.h; sourceTree = "<group>"; };
 		2B0000010000000000000011 /* A5BackendServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5BackendServer.m; sourceTree = "<group>"; };
 		2B0000010000000000000111 /* A5BackendServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5BackendServer.h; sourceTree = "<group>"; };
+		2B0000010000000000000012 /* A5AFCClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5AFCClient.m; sourceTree = "<group>"; };
+		2B0000010000000000000121 /* A5AFCClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5AFCClient.h; sourceTree = "<group>"; };
 		2C0000010000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D0000010000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D0000010000000000000002 /* A5.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = A5.entitlements; sourceTree = "<group>"; };
@@ -127,6 +130,8 @@
 			children = (
 				2B0000010000000000000007 /* A5ActivationService.m */,
 				2B0000010000000000000071 /* A5ActivationService.h */,
+				2B0000010000000000000012 /* A5AFCClient.m */,
+				2B0000010000000000000121 /* A5AFCClient.h */,
 				2B0000010000000000000011 /* A5BackendServer.m */,
 				2B0000010000000000000111 /* A5BackendServer.h */,
 				2B0000010000000000000008 /* A5CommandExecutor.m */,
@@ -290,6 +295,7 @@
 				2A000001000000000000000D /* A5GradientButton.m in Sources */,
 				2A000001000000000000000E /* A5LogTextView.m in Sources */,
 				2A000001000000000000000F /* A5ProgressBar.m in Sources */,
+				2A0000010000000000000012 /* A5AFCClient.m in Sources */,
 				2A0000010000000000000011 /* A5BackendServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -353,6 +359,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
 				INFOPLIST_FILE = "A5/Supporting Files/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = A5;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -362,11 +373,22 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/A5/Resources/Tools",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libimobiledevice-1.0.6.dylib",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libplist-2.0.4.dylib",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libusbmuxd-2.0.7.dylib",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				ARCHS = arm64;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a5.A5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -425,6 +447,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+					/usr/local/include,
+				);
 				INFOPLIST_FILE = "A5/Supporting Files/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = A5;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -434,10 +461,21 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/A5/Resources/Tools",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libimobiledevice-1.0.6.dylib",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libplist-2.0.4.dylib",
+					"$(PROJECT_DIR)/A5/Resources/Tools/libusbmuxd-2.0.7.dylib",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ARCHS = arm64;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a5.A5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

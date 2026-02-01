@@ -10,6 +10,7 @@
 #import "A5CommandExecutor.h"
 #import "A5Constants.h"
 #import "A5BackendServer.h"
+#import "A5AFCClient.h"
 
 @interface A5ActivationService ()
 
@@ -111,65 +112,40 @@
         return NO;
     }
 
-    // Copy payload to temporary location
-    NSString *tempPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"A5_payload"];
-    NSError *copyError = nil;
+    // Use native AFC protocol - matches Python implementation exactly
+    // Path is relative to AFC root (Media directory)
+    NSString *remotePath = @"Downloads/downloads.28.sqlitedb";
+    NSError *afcError = nil;
 
-    [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];  // Remove if exists
-    [[NSFileManager defaultManager] copyItemAtPath:payloadPath toPath:tempPath error:&copyError];
+    [self notifyLog:[NSString stringWithFormat:@"Transferring payload via AFC to %@", remotePath]];
 
-    if (copyError) {
-        [self notifyCompletion:NO message:[NSString stringWithFormat:@"Failed to prepare payload: %@", copyError.localizedDescription]];
-        return NO;
-    }
+    BOOL success = [A5AFCClient transferFile:payloadPath
+                                  toDevice:udid
+                                remotePath:remotePath
+                                     error:&afcError];
 
-    // Use relative path like original Python implementation
-    // AFC relative paths are relative to Media directory
-    NSArray *targetPaths = @[
-        @"Downloads/downloads.28.sqlitedb",
-        @"PublicStaging/downloads.28.sqlitedb"
-    ];
+    if (success) {
+        [self notifyLog:@"Payload transferred successfully via native AFC"];
+        return YES;
+    } else {
+        // Try fallback path
+        NSString *fallbackPath = @"PublicStaging/downloads.28.sqlitedb";
+        [self notifyLog:[NSString stringWithFormat:@"Trying fallback path: %@", fallbackPath]];
 
-    for (NSString *targetPath in targetPaths) {
-        [self notifyLog:[NSString stringWithFormat:@"Trying path: %@", targetPath]];
-
-        NSArray *arguments = @[@"-u", udid, @"put", tempPath, targetPath];
-
-        __block BOOL success = NO;
-        __block NSString *errorMessage = nil;
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-        [A5CommandExecutor executeCommand:[A5Constants afcclientTool]
-                                arguments:arguments
-                               completion:^(NSString *output, NSString *error, NSError *executionError) {
-            if (executionError) {
-                NSInteger exitCode = executionError.code;
-                if (exitCode == 6) {
-                    errorMessage = [NSString stringWithFormat:@"Access denied to %@", targetPath];
-                } else {
-                    errorMessage = [NSString stringWithFormat:@"Failed (code %ld) for %@", (long)exitCode, targetPath];
-                }
-            } else if ([error containsString:@"ERROR"] || [error containsString:@"error"]) {
-                errorMessage = [NSString stringWithFormat:@"Transfer error for %@", targetPath];
-            } else {
-                success = YES;
-                [self notifyLog:[NSString stringWithFormat:@"Payload transferred to %@", targetPath]];
-            }
-
-            dispatch_semaphore_signal(semaphore);
-        }];
-
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        success = [A5AFCClient transferFile:payloadPath
+                                  toDevice:udid
+                                remotePath:fallbackPath
+                                     error:&afcError];
 
         if (success) {
-            [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
+            [self notifyLog:@"Payload transferred successfully via native AFC (fallback path)"];
             return YES;
         }
     }
 
-    // All paths failed
-    [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
-    [self notifyCompletion:NO message:@"All AFC paths failed. Device may not be in correct state for activation."];
+    // Both paths failed
+    NSString *errorMsg = afcError ? afcError.localizedDescription : @"Unknown AFC error";
+    [self notifyCompletion:NO message:[NSString stringWithFormat:@"AFC transfer failed: %@", errorMsg]];
     return NO;
 }
 
