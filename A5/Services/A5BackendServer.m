@@ -128,7 +128,8 @@
     NSArray *lines = [request componentsSeparatedByString:@"\n"];
     for (NSString *line in lines) {
         if ([line hasPrefix:@"User-Agent:"]) {
-            return [line substringFromIndex:11];
+            NSString *value = [line substringFromIndex:11];
+            return [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         }
     }
     return @"";
@@ -162,10 +163,12 @@
 
     NSString *response = [NSString stringWithFormat:
         @"HTTP/1.1 200 OK\r\n"
+        @"Content-Description: File Transfer\r\n"
         @"Content-Type: application/xml\r\n"
         @"Content-Length: %lu\r\n"
         @"Content-Disposition: attachment; filename=\"patched.plist\"\r\n"
         @"Cache-Control: must-revalidate\r\n"
+        @"Pragma: public\r\n"
         @"\r\n", (unsigned long)fileData.length];
 
     send(clientSocket, [response UTF8String], response.length, 0);
