@@ -23,6 +23,7 @@
 		2A000001000000000000000E /* A5LogTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000E /* A5LogTextView.m */; };
 		2A000001000000000000000F /* A5ProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B000001000000000000000F /* A5ProgressBar.m */; };
 		2A0000010000000000000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C0000010000000000000001 /* Assets.xcassets */; };
+		2A0000010000000000000011 /* A5BackendServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0000010000000000000011 /* A5BackendServer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,8 @@
 		2B00000100000000000000E1 /* A5LogTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5LogTextView.h; sourceTree = "<group>"; };
 		2B000001000000000000000F /* A5ProgressBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5ProgressBar.m; sourceTree = "<group>"; };
 		2B00000100000000000000F1 /* A5ProgressBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5ProgressBar.h; sourceTree = "<group>"; };
+		2B0000010000000000000011 /* A5BackendServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = A5BackendServer.m; sourceTree = "<group>"; };
+		2B0000010000000000000111 /* A5BackendServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = A5BackendServer.h; sourceTree = "<group>"; };
 		2C0000010000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2D0000010000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D0000010000000000000002 /* A5.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = A5.entitlements; sourceTree = "<group>"; };
@@ -124,6 +127,8 @@
 			children = (
 				2B0000010000000000000007 /* A5ActivationService.m */,
 				2B0000010000000000000071 /* A5ActivationService.h */,
+				2B0000010000000000000011 /* A5BackendServer.m */,
+				2B0000010000000000000111 /* A5BackendServer.h */,
 				2B0000010000000000000008 /* A5CommandExecutor.m */,
 				2B0000010000000000000081 /* A5CommandExecutor.h */,
 				2B0000010000000000000009 /* A5DeviceManager.m */,
@@ -285,6 +290,7 @@
 				2A000001000000000000000D /* A5GradientButton.m in Sources */,
 				2A000001000000000000000E /* A5LogTextView.m in Sources */,
 				2A000001000000000000000F /* A5ProgressBar.m in Sources */,
+				2A0000010000000000000011 /* A5BackendServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

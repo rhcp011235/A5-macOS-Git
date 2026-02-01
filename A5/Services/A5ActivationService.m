@@ -9,12 +9,13 @@
 #import "A5ActivationService.h"
 #import "A5CommandExecutor.h"
 #import "A5Constants.h"
+#import "A5BackendServer.h"
 
 @interface A5ActivationService ()
 
 @property (assign, nonatomic) BOOL isCancelled;
 @property (strong, nonatomic) dispatch_queue_t activationQueue;
-@property (strong, nonatomic, nullable) NSTask *phpServerTask;
+@property (strong, nonatomic, nullable) A5BackendServer *backendServer;
 @property (strong, nonatomic, nullable) NSTask *iproxyTask;
 
 @end
@@ -296,21 +297,6 @@
         return NO;
     }
 
-    // Check if PHP is available (try multiple locations)
-    NSString *phpPath = nil;
-    NSArray *phpLocations = @[@"/usr/bin/php", @"/opt/homebrew/bin/php", @"/usr/local/bin/php"];
-    for (NSString *path in phpLocations) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-            phpPath = path;
-            break;
-        }
-    }
-
-    if (!phpPath) {
-        [self notifyLog:@"PHP not found on system. Install PHP to continue."];
-        return NO;
-    }
-
     // Get iproxy path from bundle or system
     NSString *iproxyPath = [A5CommandExecutor pathForTool:[A5Constants iproxyTool]];
     if (!iproxyPath) {
@@ -341,39 +327,26 @@
         return NO;
     }
 
-    // Create NSTask to run PHP built-in server
-    self.phpServerTask = [[NSTask alloc] init];
-    self.phpServerTask.launchPath = phpPath;
-    self.phpServerTask.arguments = @[@"-S", @"localhost:8080", @"-t", backendPath];
-    self.phpServerTask.currentDirectoryPath = backendPath;
-
-    // Redirect output to avoid hanging
-    NSPipe *outputPipe = [NSPipe pipe];
-    NSPipe *errorPipe = [NSPipe pipe];
-    self.phpServerTask.standardOutput = outputPipe;
-    self.phpServerTask.standardError = errorPipe;
-
-    @try {
-        [self.phpServerTask launch];
-        [self notifyLog:@"Backend server started on localhost:8080"];
-
-        // Wait a moment for server to start
-        [NSThread sleepForTimeInterval:1.0];
-
-        return YES;
-    } @catch (NSException *exception) {
-        [self notifyLog:[NSString stringWithFormat:@"Failed to start backend server: %@", exception.reason]];
+    // Start native HTTP backend server
+    self.backendServer = [[A5BackendServer alloc] init];
+    if (![self.backendServer startServerOnPort:8080 withBackendPath:backendPath]) {
+        [self notifyLog:@"Failed to start backend server on port 8080"];
         [self stopPHPServer];
         return NO;
     }
+
+    [self notifyLog:@"Backend server started on localhost:8080"];
+    [NSThread sleepForTimeInterval:0.5];
+
+    return YES;
 }
 
 - (void)stopPHPServer {
-    if (self.phpServerTask && self.phpServerTask.isRunning) {
-        [self.phpServerTask terminate];
+    if (self.backendServer && self.backendServer.isRunning) {
+        [self.backendServer stopServer];
         [self notifyLog:@"Backend server stopped"];
     }
-    self.phpServerTask = nil;
+    self.backendServer = nil;
 
     if (self.iproxyTask && self.iproxyTask.isRunning) {
         [self.iproxyTask terminate];
