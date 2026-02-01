@@ -123,45 +123,54 @@
         return NO;
     }
 
-    // Execute afcclient to transfer file
-    // Command: afcclient put --udid <udid> <source> /Downloads/downloads.28.sqlitedb
-    NSArray *arguments = @[@"put", @"--udid", udid, tempPath, @"/Downloads/downloads.28.sqlitedb"];
+    // Try multiple paths - Hello screen has restricted AFC access
+    NSArray *targetPaths = @[
+        @"/PublicStaging/downloads.28.sqlitedb",
+        @"/Downloads/downloads.28.sqlitedb",
+        @"/var/mobile/Media/Downloads/downloads.28.sqlitedb"
+    ];
 
-    __block BOOL success = NO;
-    __block NSString *errorMessage = nil;
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    for (NSString *targetPath in targetPaths) {
+        [self notifyLog:[NSString stringWithFormat:@"Trying path: %@", targetPath]];
 
-    [A5CommandExecutor executeCommand:[A5Constants afcclientTool]
-                            arguments:arguments
-                           completion:^(NSString *output, NSString *error, NSError *executionError) {
-        if (executionError) {
-            NSInteger exitCode = executionError.code;
-            if (exitCode == 6) {
-                errorMessage = @"Access denied. Please unlock device, tap Trust on device, and try again.";
+        NSArray *arguments = @[@"put", @"--udid", udid, tempPath, targetPath];
+
+        __block BOOL success = NO;
+        __block NSString *errorMessage = nil;
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+        [A5CommandExecutor executeCommand:[A5Constants afcclientTool]
+                                arguments:arguments
+                               completion:^(NSString *output, NSString *error, NSError *executionError) {
+            if (executionError) {
+                NSInteger exitCode = executionError.code;
+                if (exitCode == 6) {
+                    errorMessage = [NSString stringWithFormat:@"Access denied to %@", targetPath];
+                } else {
+                    errorMessage = [NSString stringWithFormat:@"Failed (code %ld) for %@", (long)exitCode, targetPath];
+                }
+            } else if ([error containsString:@"ERROR"] || [error containsString:@"error"]) {
+                errorMessage = [NSString stringWithFormat:@"Transfer error for %@", targetPath];
             } else {
-                errorMessage = [NSString stringWithFormat:@"AFC transfer failed (code %ld). Unlock device and tap Trust.", (long)exitCode];
+                success = YES;
+                [self notifyLog:[NSString stringWithFormat:@"Payload transferred to %@", targetPath]];
             }
-        } else if ([error containsString:@"ERROR"] || [error containsString:@"error"]) {
-            errorMessage = @"AFC file transfer error. Make sure device is unlocked and trusted.";
-        } else {
-            success = YES;
-            [self notifyLog:@"Payload transferred successfully"];
+
+            dispatch_semaphore_signal(semaphore);
+        }];
+
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+        if (success) {
+            [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
+            return YES;
         }
-
-        // Clean up temp file
-        [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
-
-        dispatch_semaphore_signal(semaphore);
-    }];
-
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-    if (!success) {
-        [self notifyCompletion:NO message:errorMessage ?: @"Payload transfer failed"];
-        return NO;
     }
 
-    return YES;
+    // All paths failed
+    [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
+    [self notifyCompletion:NO message:@"All AFC paths failed. Device may not be in correct state for activation."];
+    return NO;
 }
 
 // Step 2: First device restart
