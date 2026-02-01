@@ -55,7 +55,7 @@
 
 - (void)performActivationWorkflow:(NSString *)udid {
     // Step 0: Start local PHP server for backend
-    if (![self startPHPServer]) {
+    if (![self startPHPServerForDevice:udid]) {
         [self notifyCompletion:NO message:@"Failed to start backend server"];
         return;
     }
@@ -208,18 +208,21 @@
 
 // Wait for device restart with countdown
 - (void)waitForRestart:(NSInteger)seconds restartNumber:(NSInteger)restartNumber {
+    NSInteger baseProgress = (restartNumber == 1) ? 60 : 80;
+
     for (NSInteger i = seconds; i >= 0; i--) {
         if (self.isCancelled) {
             return;
         }
 
         NSString *message = [NSString stringWithFormat:@"Please wait for reboot after: %ld seconds", (long)i];
-        [self notifyProgress:60 message:message];
+        [self notifyProgress:baseProgress message:message];
 
         [NSThread sleepForTimeInterval:1.0];
     }
 
-    [self notifyProgress:70 message:@"Restarting your device is completed now..."];
+    NSInteger completionProgress = (restartNumber == 1) ? 70 : 90;
+    [self notifyProgress:completionProgress message:@"Restarting your device is completed now..."];
 }
 
 // Step 6: Verify activation via mobilegestalt
@@ -284,7 +287,7 @@
 
 #pragma mark - PHP Server Management
 
-- (BOOL)startPHPServer {
+- (BOOL)startPHPServerForDevice:(NSString *)udid {
     // Get backend directory path from bundle
     NSString *backendPath = [[NSBundle mainBundle] pathForResource:@"backend" ofType:nil inDirectory:@"Resources"];
 
@@ -293,10 +296,18 @@
         return NO;
     }
 
-    // Check if PHP is available
-    NSString *phpPath = @"/usr/bin/php";
-    if (![[NSFileManager defaultManager] fileExistsAtPath:phpPath]) {
-        [self notifyLog:@"PHP not found on system"];
+    // Check if PHP is available (try multiple locations)
+    NSString *phpPath = nil;
+    NSArray *phpLocations = @[@"/usr/bin/php", @"/opt/homebrew/bin/php", @"/usr/local/bin/php"];
+    for (NSString *path in phpLocations) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+            phpPath = path;
+            break;
+        }
+    }
+
+    if (!phpPath) {
+        [self notifyLog:@"PHP not found on system. Install PHP to continue."];
         return NO;
     }
 
@@ -313,7 +324,7 @@
     // Start iproxy for USB port forwarding (device port 8080 -> Mac port 8080)
     self.iproxyTask = [[NSTask alloc] init];
     self.iproxyTask.launchPath = iproxyPath;
-    self.iproxyTask.arguments = @[@"8080:8080"];
+    self.iproxyTask.arguments = @[@"-u", udid, @"8080", @"8080"];
 
     NSPipe *iproxyOutputPipe = [NSPipe pipe];
     NSPipe *iproxyErrorPipe = [NSPipe pipe];
