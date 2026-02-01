@@ -290,7 +290,7 @@
 
 - (BOOL)startPHPServerForDevice:(NSString *)udid {
     // Get backend directory path from bundle
-    NSString *backendPath = [[NSBundle mainBundle] pathForResource:@"backend" ofType:nil inDirectory:@"Resources"];
+    NSString *backendPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"backend"];
 
     if (!backendPath || ![[NSFileManager defaultManager] fileExistsAtPath:backendPath]) {
         [self notifyLog:@"Backend server files not found in bundle"];
