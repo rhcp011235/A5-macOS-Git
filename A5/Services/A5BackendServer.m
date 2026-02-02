@@ -104,22 +104,51 @@
     buffer[bytesRead] = '\0';
     NSString *request = [NSString stringWithUTF8String:buffer];
 
+    NSLog(@"[Backend] ========================================");
+    NSLog(@"[Backend] Received HTTP request (%zd bytes)", bytesRead);
+
+    // Log first line (request method and path)
+    NSArray *lines = [request componentsSeparatedByString:@"\n"];
+    if (lines.count > 0) {
+        NSLog(@"[Backend] Request: %@", [lines[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]);
+    }
+
     NSString *userAgent = [self extractUserAgentFromRequest:request];
+    NSLog(@"[Backend] User-Agent: %@", userAgent.length > 0 ? userAgent : @"(empty)");
+
     NSString *model = [self extractValueFromString:userAgent withPattern:@"model/([a-zA-Z0-9,]+)"];
     NSString *build = [self extractValueFromString:userAgent withPattern:@"build/([a-zA-Z0-9]+)"];
+
+    NSLog(@"[Backend] Parsed model: %@", model ?: @"(none)");
+    NSLog(@"[Backend] Parsed build: %@", build ?: @"(none)");
 
     if (model && build && ![model containsString:@".."] && ![build containsString:@".."]) {
         NSString *plistPath = [NSString stringWithFormat:@"%@/plists/%@/%@/patched.plist",
                               self.backendPath, model, build];
 
+        NSLog(@"[Backend] Looking for plist: %@", plistPath);
+
         if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+            NSError *error = nil;
+            NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:plistPath error:&error];
+            unsigned long long fileSize = [attrs fileSize];
+
+            NSLog(@"[Backend] ✓ Plist found (%llu bytes)", fileSize);
+            NSLog(@"[Backend] Sending 200 OK with plist data");
             [self sendFile:plistPath toSocket:clientSocket];
         } else {
+            NSLog(@"[Backend] ✗ Plist NOT found at path");
+            NSLog(@"[Backend] Sending 403 Forbidden");
             [self sendForbidden:clientSocket];
         }
     } else {
+        NSLog(@"[Backend] ✗ Invalid or missing model/build in User-Agent");
+        NSLog(@"[Backend] Sending 403 Forbidden");
         [self sendForbidden:clientSocket];
     }
+
+    NSLog(@"[Backend] Request handling complete");
+    NSLog(@"[Backend] ========================================");
 
     close(clientSocket);
 }
