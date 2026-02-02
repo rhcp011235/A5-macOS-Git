@@ -18,6 +18,8 @@
 @property (strong, nonatomic) dispatch_queue_t activationQueue;
 @property (strong, nonatomic, nullable) A5BackendServer *backendServer;
 @property (strong, nonatomic, nullable) NSTask *iproxyTask;
+@property (strong, nonatomic, nullable) NSFileHandle *logFileHandle;
+@property (strong, nonatomic, nullable) NSString *logFilePath;
 
 @end
 
@@ -28,6 +30,7 @@
     if (self) {
         _isCancelled = NO;
         _activationQueue = dispatch_queue_create("com.a5.activation", DISPATCH_QUEUE_SERIAL);
+        [self setupLogFile];
     }
     return self;
 }
@@ -450,6 +453,26 @@
     // Stop PHP server when activation completes or fails
     [self stopPHPServer];
 
+    // Close log file and notify user
+    if (self.logFileHandle) {
+        NSString *footer = [NSString stringWithFormat:@"\n%@\nActivation %@\nLog saved to: %@\n",
+                           @"=================================================================",
+                           success ? @"SUCCEEDED" : @"FAILED",
+                           self.logFilePath];
+        [self.logFileHandle writeData:[footer dataUsingEncoding:NSUTF8StringEncoding]];
+        [self.logFileHandle closeFile];
+        self.logFileHandle = nil;
+
+        NSLog(@"[A5] Log file closed: %@", self.logFilePath);
+
+        // Show file location in UI
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([self.delegate respondsToSelector:@selector(activationLogMessage:)]) {
+                [self.delegate activationLogMessage:[NSString stringWithFormat:@"📄 Complete log saved to Desktop: A5_Activation_Log_*.txt"]];
+            }
+        });
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([self.delegate respondsToSelector:@selector(activationCompleted:message:)]) {
             [self.delegate activationCompleted:success message:message];
@@ -457,7 +480,37 @@
     });
 }
 
+- (void)setupLogFile {
+    // Create log file in user's Desktop with timestamp
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd_HH-mm-ss";
+    NSString *timestamp = [formatter stringFromDate:[NSDate date]];
+
+    NSString *desktopPath = [NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES) firstObject];
+    self.logFilePath = [desktopPath stringByAppendingPathComponent:[NSString stringWithFormat:@"A5_Activation_Log_%@.txt", timestamp]];
+
+    // Create file
+    [[NSFileManager defaultManager] createFileAtPath:self.logFilePath contents:nil attributes:nil];
+    self.logFileHandle = [NSFileHandle fileHandleForWritingAtPath:self.logFilePath];
+
+    if (self.logFileHandle) {
+        NSString *header = [NSString stringWithFormat:@"A5 Activation Log - %@\n%@\n\n",
+                           [[NSDate date] description],
+                           @"================================================================="];
+        [self.logFileHandle writeData:[header dataUsingEncoding:NSUTF8StringEncoding]];
+
+        NSLog(@"[A5] Log file created: %@", self.logFilePath);
+    }
+}
+
 - (void)notifyLog:(NSString *)message {
+    // Write to file
+    if (self.logFileHandle) {
+        NSString *logLine = [NSString stringWithFormat:@"%@\n", message];
+        [self.logFileHandle writeData:[logLine dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+
+    // Send to UI
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([self.delegate respondsToSelector:@selector(activationLogMessage:)]) {
             [self.delegate activationLogMessage:message];
