@@ -25,7 +25,16 @@ install_name_tool -change /usr/local/lib/libusbmuxd-2.0.7.dylib \
 
 echo "✓ Dylib paths fixed - app is now portable!"
 
+# Re-sign with ad-hoc signature (required for macOS to run the app)
+echo ""
+echo "Re-signing app..."
+codesign --force --deep --sign - "$APP_PATH"
+
+echo "✓ App re-signed successfully!"
+
 # Verify
 echo ""
 echo "Verification:"
 otool -L "$EXECUTABLE" | grep -E "(libimobiledevice|libplist|libusbmuxd)"
+echo ""
+codesign -vv "$APP_PATH" 2>&1 | head -2
