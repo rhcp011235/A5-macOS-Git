@@ -402,6 +402,13 @@
     // Start native HTTP backend server
     [self notifyLog:@"Starting HTTP backend server on port 8080..."];
     self.backendServer = [[A5BackendServer alloc] init];
+
+    // Set up log handler to forward backend logs to UI
+    __weak typeof(self) weakSelf = self;
+    self.backendServer.logHandler = ^(NSString *message) {
+        [weakSelf notifyLog:message];
+    };
+
     if (![self.backendServer startServerOnPort:8080 withBackendPath:backendPath]) {
         [self notifyLog:@"✗ Backend server failed to bind to port 8080"];
         [self stopPHPServer];

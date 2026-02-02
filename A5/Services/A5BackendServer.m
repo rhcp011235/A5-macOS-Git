@@ -92,6 +92,13 @@
     }
 }
 
+- (void)log:(NSString *)message {
+    if (self.logHandler) {
+        self.logHandler(message);
+    }
+    NSLog(@"%@", message); // Still log to console for debugging
+}
+
 - (void)handleClient:(int)clientSocket {
     char buffer[4096];
     ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
@@ -104,51 +111,51 @@
     buffer[bytesRead] = '\0';
     NSString *request = [NSString stringWithUTF8String:buffer];
 
-    NSLog(@"[Backend] ========================================");
-    NSLog(@"[Backend] Received HTTP request (%zd bytes)", bytesRead);
+    [self log:@"[Backend] ========================================"];
+    [self log:[NSString stringWithFormat:@"[Backend] Received HTTP request (%zd bytes)", bytesRead]];
 
     // Log first line (request method and path)
     NSArray *lines = [request componentsSeparatedByString:@"\n"];
     if (lines.count > 0) {
-        NSLog(@"[Backend] Request: %@", [lines[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]);
+        [self log:[NSString stringWithFormat:@"[Backend] Request: %@", [lines[0] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]]];
     }
 
     NSString *userAgent = [self extractUserAgentFromRequest:request];
-    NSLog(@"[Backend] User-Agent: %@", userAgent.length > 0 ? userAgent : @"(empty)");
+    [self log:[NSString stringWithFormat:@"[Backend] User-Agent: %@", userAgent.length > 0 ? userAgent : @"(empty)"]];
 
     NSString *model = [self extractValueFromString:userAgent withPattern:@"model/([a-zA-Z0-9,]+)"];
     NSString *build = [self extractValueFromString:userAgent withPattern:@"build/([a-zA-Z0-9]+)"];
 
-    NSLog(@"[Backend] Parsed model: %@", model ?: @"(none)");
-    NSLog(@"[Backend] Parsed build: %@", build ?: @"(none)");
+    [self log:[NSString stringWithFormat:@"[Backend] Parsed model: %@", model ?: @"(none)"]];
+    [self log:[NSString stringWithFormat:@"[Backend] Parsed build: %@", build ?: @"(none)"]];
 
     if (model && build && ![model containsString:@".."] && ![build containsString:@".."]) {
         NSString *plistPath = [NSString stringWithFormat:@"%@/plists/%@/%@/patched.plist",
                               self.backendPath, model, build];
 
-        NSLog(@"[Backend] Looking for plist: %@", plistPath);
+        [self log:[NSString stringWithFormat:@"[Backend] Looking for plist: %@", plistPath]];
 
         if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
             NSError *error = nil;
             NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:plistPath error:&error];
             unsigned long long fileSize = [attrs fileSize];
 
-            NSLog(@"[Backend] ✓ Plist found (%llu bytes)", fileSize);
-            NSLog(@"[Backend] Sending 200 OK with plist data");
+            [self log:[NSString stringWithFormat:@"[Backend] ✓ Plist found (%llu bytes)", fileSize]];
+            [self log:@"[Backend] Sending 200 OK with plist data"];
             [self sendFile:plistPath toSocket:clientSocket];
         } else {
-            NSLog(@"[Backend] ✗ Plist NOT found at path");
-            NSLog(@"[Backend] Sending 403 Forbidden");
+            [self log:@"[Backend] ✗ Plist NOT found at path"];
+            [self log:@"[Backend] Sending 403 Forbidden"];
             [self sendForbidden:clientSocket];
         }
     } else {
-        NSLog(@"[Backend] ✗ Invalid or missing model/build in User-Agent");
-        NSLog(@"[Backend] Sending 403 Forbidden");
+        [self log:@"[Backend] ✗ Invalid or missing model/build in User-Agent"];
+        [self log:@"[Backend] Sending 403 Forbidden"];
         [self sendForbidden:clientSocket];
     }
 
-    NSLog(@"[Backend] Request handling complete");
-    NSLog(@"[Backend] ========================================");
+    [self log:@"[Backend] Request handling complete"];
+    [self log:@"[Backend] ========================================"];
 
     close(clientSocket);
 }
