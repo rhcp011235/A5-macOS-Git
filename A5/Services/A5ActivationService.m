@@ -148,8 +148,9 @@
             break;
 
         case 2: // Local
-            backendURL = @"http://localhost:8080/server.php";
-            backendName = @"Local";
+            // Use Mac.local instead of localhost - iOS can resolve this over USB network
+            backendURL = @"http://Mac.local:8080/server.php";
+            backendName = @"Local (USB)";
             break;
 
         default:
@@ -430,39 +431,17 @@
     }
     [self notifyLog:[NSString stringWithFormat:@"✓ Backend path: %@", backendPath]];
 
-    // Get iproxy path from bundle or system
-    NSString *iproxyPath = [A5CommandExecutor pathForTool:[A5Constants iproxyTool]];
-    if (!iproxyPath) {
-        [self notifyLog:@"✗ iproxy not found"];
-        return NO;
-    }
-    [self notifyLog:[NSString stringWithFormat:@"✓ iproxy path: %@", iproxyPath]];
-
     // Stop any existing servers
     [self stopPHPServer];
 
-    // Start iproxy for USB port forwarding (device port 8080 -> Mac port 8080)
-    self.iproxyTask = [[NSTask alloc] init];
-    self.iproxyTask.launchPath = iproxyPath;
-    self.iproxyTask.arguments = @[@"-u", udid, @"8080", @"8080"];
+    // NOTE: iproxy is NOT needed for local backend!
+    // iOS devices connected via USB automatically get network connectivity to Mac.
+    // The device will connect to Mac.local:8080 over USB network interface.
+    // iproxy only supports Mac→Device tunneling, not Device→Mac (which we need).
+    [self notifyLog:@"ℹ️ Local backend uses USB network (no iproxy needed)"];
 
-    NSPipe *iproxyOutputPipe = [NSPipe pipe];
-    NSPipe *iproxyErrorPipe = [NSPipe pipe];
-    self.iproxyTask.standardOutput = iproxyOutputPipe;
-    self.iproxyTask.standardError = iproxyErrorPipe;
-
-    @try {
-        [self.iproxyTask launch];
-        [self notifyLog:[NSString stringWithFormat:@"✓ iproxy launched (PID: %d) - forwarding 8080:8080 to device %@", self.iproxyTask.processIdentifier, udid]];
-        [NSThread sleepForTimeInterval:0.5];
-    } @catch (NSException *exception) {
-        [self notifyLog:[NSString stringWithFormat:@"✗ iproxy launch failed: %@", exception.reason]];
-        self.iproxyTask = nil;
-        return NO;
-    }
-
-    // Start native HTTP backend server
-    [self notifyLog:@"Starting HTTP backend server on port 8080..."];
+    // Start native HTTP backend server on ALL interfaces (not just 127.0.0.1)
+    [self notifyLog:@"Starting HTTP backend server on port 8080 (all interfaces)..."];
     self.backendServer = [[A5BackendServer alloc] init];
 
     // Set up log handler to forward backend logs to UI
@@ -477,8 +456,8 @@
         return NO;
     }
 
-    [self notifyLog:@"✓ Backend server listening on localhost:8080"];
-    [self notifyLog:@"Device can now fetch activation plists via USB tunnel"];
+    [self notifyLog:@"✓ Backend server listening on port 8080 (accessible via USB)"];
+    [self notifyLog:@"ℹ️ Device will connect to Mac.local:8080 over USB network"];
     [NSThread sleepForTimeInterval:0.5];
 
     return YES;
@@ -491,11 +470,7 @@
     }
     self.backendServer = nil;
 
-    if (self.iproxyTask && self.iproxyTask.isRunning) {
-        [self.iproxyTask terminate];
-        [self notifyLog:@"USB port forwarding stopped"];
-    }
-    self.iproxyTask = nil;
+    // iproxyTask removed - no longer needed for local backend
 }
 
 #pragma mark - Delegate Notifications

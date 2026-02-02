@@ -48,7 +48,7 @@
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_addr.s_addr = INADDR_ANY; // Listen on ALL interfaces (not just 127.0.0.1)
     serverAddr.sin_port = htons((uint16_t)port);
 
     if (bind(self.serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
