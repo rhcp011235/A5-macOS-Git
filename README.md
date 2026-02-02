@@ -36,7 +36,8 @@ This tool ONLY works with A5 chip devices running specific iOS versions:
 - macOS 10.14 (Mojave) or later
 - Works on both Intel and Apple Silicon Macs
 - Xcode 12.0 or later (for building from source)
-- PHP (pre-installed on macOS)
+- Device must be connected to WiFi for remote backend activation
+- No internet required for local backend activation
 
 ## Features
 
@@ -45,11 +46,16 @@ This tool ONLY works with A5 chip devices running specific iOS versions:
 - Automatic device detection via USB
 - Real-time device information display
 - Activation bypass for A5 devices
-- Clean logging interface
+- Clean logging interface with verbose mode toggle
 - Device model identification
 - iOS version detection
-- Local backend server (no internet required for activation)
-- Offline operation
+- **Three backend server options:**
+  - **Remote (nothingtool.com)** - Default, proven to work 100%
+  - **Remote (mrcellphoneunlocker.com)** - User-controlled backup server
+  - **Local (USB Network)** - Fully offline, no internet required
+- Native HTTP backend server (no PHP required)
+- Automatic log file saving to Desktop
+- Complete offline operation with local backend
 
 ## Installation
 
@@ -103,20 +109,28 @@ This creates a distribution-ready package in `dist/` directory.
 
 1. Launch A5.app
 2. Connect your A5 device via USB
-3. Trust the computer on your device if prompted
-4. Wait for device detection (automatic, takes ~3 seconds)
-5. Ensure device is on the Setup Assistant screen (not yet activated)
-6. Click "Activate Your Device"
-7. Wait for the activation process to complete (3-5 minutes)
+3. **Ensure device is connected to WiFi** (required for activation)
+4. Trust the computer on your device if prompted
+5. Wait for device detection (automatic, takes ~3 seconds)
+6. Ensure device is on the Setup Assistant screen (not yet activated)
+7. **Select backend server** (dropdown menu):
+   - **nothingtool.com** - Default, requires device internet access
+   - **mrcellphoneunlocker.com** - Backup server, requires device internet access
+   - **Local (Experimental)** - Offline mode, uses USB network (Mac.local)
+8. **(Optional)** Toggle "Verbose Logging" for detailed debug output
+9. Click "Activate Your Device"
+10. Wait for the activation process to complete (3-5 minutes)
 
 The application will:
-- Start a local backend server automatically
 - Detect the connected device
 - Verify it's an A5 chip device with supported iOS version
 - Display device model and iOS version
-- Perform activation bypass
+- Start backend server (if using local backend)
+- Transfer activation payload to device
+- Restart device twice
+- Verify activation via MobileGestalt
+- Save complete log to Desktop
 - Show real-time progress
-- Stop the backend server when complete
 
 ## Project Structure
 
@@ -149,9 +163,11 @@ The application uses a programmatic UI approach without XIB/Storyboard files:
 
 ### Key Components
 
-- `A5MainWindowController` - Main application window and UI
+- `A5MainWindowController` - Main application window and UI with backend selector
 - `A5DeviceManager` - USB device detection and monitoring
-- `A5ActivationService` - Activation bypass implementation with PHP server management
+- `A5ActivationService` - Activation bypass implementation with backend management
+- `A5BackendServer` - Native HTTP server for local backend (no PHP)
+- `A5AFCClient` - Native AFC protocol implementation for file transfers
 - `A5CommandExecutor` - Executes libimobiledevice commands
 - `A5DeviceModelMapper` - Maps device identifiers to models
 
@@ -170,31 +186,56 @@ The application uses libimobiledevice tools:
 - `idevice_id` - Lists connected devices
 - `ideviceinfo` - Retrieves device information
 - `idevicediagnostics` - Device diagnostics and MobileGestalt queries
-- `afcclient` - File transfer to device
+- Native AFC protocol - File transfers to device (implemented in Objective-C)
 
 ### Activation Process
 
-The activation process uses a local backend server for complete offline operation:
+1. **Payload Preparation**: SQLite payload URL is dynamically configured based on selected backend
+2. **Payload Transfer**: Native AFC protocol transfers payload to `/Downloads/downloads.28.sqlitedb`
+3. **First Restart**: Device reboots and executes payload via itunesstored/bookassetd exploit
+4. **Payload Execution**: Device fetches activation plist from selected backend server
+5. **MobileGestalt Modification**: Payload writes patched data to MobileGestalt cache
+6. **Second Restart**: Device reboots to apply changes
+7. **Verification**: App checks MobileGestalt keys (hactivation, ShouldHactivate)
+8. **Final Restart**: Device reboots activated
+9. **Log Saved**: Complete activation log saved to Desktop
 
-1. Application starts local PHP server on localhost:8080
-2. Uploads SQLite payload to device (/Downloads/downloads.28.sqlitedb)
-3. Device restarts and reads the payload
-4. Device contacts the local backend server
-5. PHP server serves device-specific patched PLIST based on model and iOS version
-6. Device updates MobileGestalt cache with patched data
-7. Second device restart
-8. Verification of MobileGestalt keys (hactivation, ShouldHactivate)
-9. Final restart
-10. Application stops the backend server
-11. Device boots activated
+### Backend Server Options
 
-### Backend Server
+**Three backend modes available:**
 
-The application includes a built-in backend server system:
-- PHP server runs locally during activation (no internet required)
+#### 1. Remote Backend (nothingtool.com) - Default
+- URL: `https://nothingtool.com/invoice.php`
+- Requires device WiFi + internet access
+- Proven to work 100%
+- No Mac configuration needed
+
+#### 2. Remote Backend (mrcellphoneunlocker.com) - Backup
+- URL: `http://mrcellphoneunlocker.com/A5/invoice.php`
+- User-controlled server (backup option)
+- Requires device WiFi + internet access
+- No SSL certificate required (uses HTTP)
+
+#### 3. Local Backend (USB Network) - Offline
+- URL: `http://Mac.local:8080/server.php`
+- **Fully offline** - no internet required!
+- Native HTTP server (Objective-C, not PHP)
+- Binds to all network interfaces (0.0.0.0:8080)
+- Device connects via USB network interface
+- Uses mDNS/Bonjour for Mac.local resolution
+- Same technology as SSH over USB
+- **No iproxy needed** - uses built-in macOS USB networking
 - 31 device/iOS-specific patched PLIST files
 - Serves correct PLIST based on device User-Agent
 - Automatic start/stop during activation process
+
+**How Local Backend Works:**
+- macOS creates USB network interface when iOS device connects
+- Backend server listens on all interfaces (not just 127.0.0.1)
+- Device resolves Mac.local via mDNS over USB
+- Device makes HTTP GET request to fetch activation plist
+- No port conflicts, no iproxy complexity
+- True peer-to-peer networking over USB
 
 ## Troubleshooting
 
@@ -214,11 +255,14 @@ The application includes a built-in backend server system:
 
 ### Activation Fails
 
+- **Ensure device is connected to WiFi** (most common issue!)
 - Ensure device is on Setup Assistant screen (not yet activated)
 - Check device is unlocked
 - Verify iOS version is supported
-- Try restarting the application
-- Check logs for backend server errors
+- Try different backend server (nothingtool.com is most reliable)
+- Check Desktop for log file with detailed error information
+- Enable "Verbose Logging" to see backend request details
+- For local backend: verify Mac.local resolves on device
 
 ### Build Issues
 
@@ -229,9 +273,20 @@ The application includes a built-in backend server system:
 
 ### Backend Server Issues
 
+**For Local Backend:**
 - Port 8080 must be available: `lsof -i :8080`
-- PHP must be installed (default on macOS)
-- Check app logs for "Backend server started" message
+- Backend server binds to 0.0.0.0:8080 (all interfaces)
+- Check app logs for "Backend server listening on port 8080"
+- Check for `[Backend] Received HTTP request` in logs
+- If no backend logs appear: device can't reach Mac.local
+- Verify USB connection is stable
+- Try unplugging/replugging device
+
+**For Remote Backends:**
+- Device must have WiFi + internet access
+- Check if backend URL is accessible in browser
+- nothingtool.com requires HTTPS
+- mrcellphoneunlocker.com uses HTTP (no SSL needed)
 
 ## Security & Privacy
 
@@ -257,9 +312,15 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ## Acknowledgments
 
-- libimobiledevice project for iOS device communication
-- A5_Bypass_OSS project for backend server implementation reference
+- **[@xxxsapnasxxx](https://x.com/xxxsapnasxxx)** - Extensive testing and invaluable feedback. This project would not have been possible without their dedication and persistence in testing every build and providing detailed bug reports. Thank you!
+- [libimobiledevice project](https://github.com/libimobiledevice/libimobiledevice) - iOS device communication libraries
+- [A5_Bypass_OSS](https://github.com/overcast302/A5_Bypass_OSS/) - Original Python implementation and backend server reference
+- [tcurdt's iproxy investigations](https://github.com/tcurdt/iProxy) - USB networking research
 - A5 community for research and testing
+
+## Special Thanks
+
+A massive thank you to [@xxxsapnasxxx](https://x.com/xxxsapnasxxx) who tested countless builds on real hardware, discovered critical bugs, and helped troubleshoot every issue from AFC transfers to SSL certificates. Their patience and detailed testing reports were instrumental in making this tool work reliably. Could not have done it without you! 🙏
 
 ## Author
 
