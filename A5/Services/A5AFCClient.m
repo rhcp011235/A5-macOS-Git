@@ -29,8 +29,11 @@
     // Convert UDID to C string
     const char *udid_cstr = [udid UTF8String];
 
+    NSLog(@"[AFC] Connecting to device: %@", udid);
+
     // Connect to device
     if (idevice_new(&device, udid_cstr) != IDEVICE_E_SUCCESS) {
+        NSLog(@"[AFC] Failed to connect to device");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:100
@@ -40,7 +43,9 @@
     }
 
     // Create lockdown client
+    NSLog(@"[AFC] Creating lockdown connection...");
     if (lockdownd_client_new_with_handshake(device, &lockdown, "A5") != LOCKDOWN_E_SUCCESS) {
+        NSLog(@"[AFC] Lockdown handshake failed");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:101
@@ -50,7 +55,9 @@
     }
 
     // Start AFC service
+    NSLog(@"[AFC] Starting AFC service...");
     if (lockdownd_start_service(lockdown, "com.apple.afc", &service) != LOCKDOWN_E_SUCCESS) {
+        NSLog(@"[AFC] Failed to start AFC service");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:102
@@ -70,8 +77,10 @@
     }
 
     // Read local file
+    NSLog(@"[AFC] Reading local file: %@", localPath);
     fileData = [NSData dataWithContentsOfFile:localPath];
     if (!fileData) {
+        NSLog(@"[AFC] Failed to read local file");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:104
@@ -83,7 +92,9 @@
     // Open remote file for writing
     const char *remote_path = [remotePath UTF8String];
 
+    NSLog(@"[AFC] Opening remote file: %@ (%lu bytes)", remotePath, (unsigned long)[fileData length]);
     if (afc_file_open(afc, remote_path, AFC_FOPEN_WRONLY, &file_handle) != AFC_E_SUCCESS) {
+        NSLog(@"[AFC] Failed to open remote file for writing");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:105
@@ -94,7 +105,9 @@
 
     // Write file data
     uint32_t bytes_written = 0;
+    NSLog(@"[AFC] Writing %lu bytes to device...", (unsigned long)[fileData length]);
     if (afc_file_write(afc, file_handle, [fileData bytes], (uint32_t)[fileData length], &bytes_written) != AFC_E_SUCCESS) {
+        NSLog(@"[AFC] Write failed");
         afc_file_close(afc, file_handle);
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
@@ -108,9 +121,12 @@
     afc_file_close(afc, file_handle);
 
     // Verify bytes written
+    NSLog(@"[AFC] Wrote %u bytes (expected %lu)", bytes_written, (unsigned long)[fileData length]);
     if (bytes_written == [fileData length]) {
+        NSLog(@"[AFC] ✓ Transfer successful!");
         success = YES;
     } else {
+        NSLog(@"[AFC] ✗ Partial write detected");
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:107
