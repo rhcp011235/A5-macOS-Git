@@ -185,7 +185,7 @@
             backendName = @"mrcellphoneunlocker.com";
             break;
 
-        case 2: // Local
+        case 2: { // Local
             // Get Mac's WiFi IP address for local network access
             // This works when both Mac and device are on same WiFi network
             NSString *localIP = [self getLocalIPAddress];
@@ -199,6 +199,7 @@
                 backendName = @"Local - Mac.local";
             }
             break;
+        }
 
         default:
             backendURL = @"https://nothingtool.com/invoice.php";
