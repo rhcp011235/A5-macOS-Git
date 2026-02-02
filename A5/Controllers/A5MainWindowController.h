@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) A5ProgressBar *progressBar;
 @property (strong, nonatomic) A5GradientButton *activateButton;
 @property (strong, nonatomic) A5LogTextView *logTextView;
+@property (strong, nonatomic) NSButton *verboseLoggingCheckbox;
+@property (strong, nonatomic) NSPopUpButton *backendSelector;
 
 // Services
 @property (strong, nonatomic) A5DeviceManager *deviceManager;
@@ -41,11 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 // State
 @property (assign, nonatomic) BOOL isProcessRunning;
+@property (assign, nonatomic) BOOL verboseLogging;
+@property (assign, nonatomic) BOOL useLocalBackend;
 
 // Actions
 - (IBAction)activateButtonClicked:(id)sender;
 - (IBAction)closeButtonClicked:(id)sender;
 - (IBAction)minimizeButtonClicked:(id)sender;
+- (IBAction)verboseLoggingToggled:(id)sender;
+- (IBAction)backendSelectorChanged:(id)sender;
 
 @end
 

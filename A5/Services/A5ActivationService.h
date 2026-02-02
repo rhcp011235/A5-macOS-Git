@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface A5ActivationService : NSObject
 
 @property (weak, nonatomic, nullable) id<A5ActivationServiceDelegate> delegate;
+@property (assign, nonatomic) BOOL useLocalBackend; // YES = localhost:8080, NO = remote server
 
 /**
  * Start activation process for device

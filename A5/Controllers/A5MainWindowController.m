@@ -200,6 +200,20 @@
     [contentView addSubview:self.progressLabel];
     currentY -= 35;
 
+    // Backend selector (dropdown)
+    NSTextField *backendLabel = [self createLabel:@"Backend Server:" frame:NSMakeRect(margin, currentY + 2, 120, 18) bold:NO];
+    [contentView addSubview:backendLabel];
+
+    self.backendSelector = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(margin + 130, currentY, 150, 26) pullsDown:NO];
+    [self.backendSelector addItemWithTitle:@"Local (Offline)"];
+    [self.backendSelector addItemWithTitle:@"Remote (Online)"];
+    [self.backendSelector selectItemAtIndex:0]; // Default to Local
+    self.useLocalBackend = YES;
+    self.backendSelector.target = self;
+    self.backendSelector.action = @selector(backendSelectorChanged:);
+    [contentView addSubview:self.backendSelector];
+    currentY -= 35;
+
     // Activate button
     self.activateButton = [[A5GradientButton alloc] initWithFrame:NSMakeRect(margin, currentY, 220, 44)];
     self.activateButton.title = @"Activate Your Device";
@@ -209,9 +223,19 @@
     [contentView addSubview:self.activateButton];
     currentY -= 60;
 
-    // Log label (above log view)
-    NSTextField *logLabel = [self createLabel:@"Log:" frame:NSMakeRect(margin, currentY, 100, 18) bold:YES];
+    // Log label and verbose checkbox (side by side)
+    NSTextField *logLabel = [self createLabel:@"Log:" frame:NSMakeRect(margin, currentY, 50, 18) bold:YES];
     [contentView addSubview:logLabel];
+
+    self.verboseLoggingCheckbox = [[NSButton alloc] initWithFrame:NSMakeRect(margin + 60, currentY - 2, 150, 22)];
+    [self.verboseLoggingCheckbox setButtonType:NSButtonTypeSwitch];
+    self.verboseLoggingCheckbox.title = @"Verbose Logging";
+    self.verboseLoggingCheckbox.target = self;
+    self.verboseLoggingCheckbox.action = @selector(verboseLoggingToggled:);
+    self.verboseLoggingCheckbox.state = NSControlStateValueOn; // Default to ON
+    self.verboseLogging = YES;
+    [contentView addSubview:self.verboseLoggingCheckbox];
+
     currentY -= 25;
 
     // Log text view (A5LogTextView is already a scroll view, don't wrap it!)
@@ -476,7 +500,44 @@
 }
 
 - (void)activationLogMessage:(NSString *)message {
+    // Filter verbose messages if verbose logging is disabled
+    if (!self.verboseLogging) {
+        // Skip verbose debug messages
+        if ([message containsString:@"[Backend]"] ||
+            [message containsString:@"MobileGestalt output for"] ||
+            [message containsString:@"stdout:"] ||
+            [message containsString:@"Executing:"] ||
+            [message containsString:@"command output:"] ||
+            [message containsString:@"Checking MobileGestalt key:"] ||
+            [message containsString:@"→ Checking"] ||
+            [message containsString:@"Transferring payload via AFC to"] ||
+            [message containsString:@"  "] || // Indented verbose output
+            [message hasPrefix:@"<?xml"] || // XML output
+            [message hasPrefix:@"<plist"] ||
+            [message hasPrefix:@"<dict"] ||
+            [message hasPrefix:@"<key"] ||
+            [message containsString:@"<!DOCTYPE"]) {
+            return; // Skip verbose message
+        }
+    }
+
     [self addLog:message level:A5LogLevelInfo];
+}
+
+- (IBAction)verboseLoggingToggled:(id)sender {
+    self.verboseLogging = (self.verboseLoggingCheckbox.state == NSControlStateValueOn);
+    NSString *status = self.verboseLogging ? @"enabled" : @"disabled";
+    [self addLog:[NSString stringWithFormat:@"Verbose logging %@", status] level:A5LogLevelInfo];
+}
+
+- (IBAction)backendSelectorChanged:(id)sender {
+    self.useLocalBackend = (self.backendSelector.indexOfSelectedItem == 0);
+    NSString *backend = self.useLocalBackend ? @"Local (Offline)" : @"Remote (Online)";
+    [self addLog:[NSString stringWithFormat:@"Backend server set to: %@", backend] level:A5LogLevelInfo];
+
+    if (!self.useLocalBackend) {
+        [self addLog:@"⚠️ Remote backend requires device to have internet access via WiFi" level:A5LogLevelWarning];
+    }
 }
 
 #pragma mark - Actions
@@ -507,6 +568,9 @@
     }
 
     [self addLog:@"Starting activation process..." level:A5LogLevelInfo];
+
+    // Configure backend setting
+    self.activationService.useLocalBackend = self.useLocalBackend;
 
     // Start activation
     [self.activationService activateDevice:self.currentDevice.udid];

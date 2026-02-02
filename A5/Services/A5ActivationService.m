@@ -11,6 +11,7 @@
 #import "A5Constants.h"
 #import "A5BackendServer.h"
 #import "A5AFCClient.h"
+#import <sqlite3.h>
 
 @interface A5ActivationService ()
 
@@ -119,18 +120,52 @@
 }
 
 // Step 1: Transfer activation payload to device
+- (NSString *)preparePayloadWithBackendURL:(NSString *)originalPath {
+    // Create temporary copy of payload with modified backend URL
+    NSString *tempPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"A5_payload_modified.db"];
+
+    // Copy original to temp
+    [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil]; // Remove if exists
+    NSError *copyError = nil;
+    if (![[NSFileManager defaultManager] copyItemAtPath:originalPath toPath:tempPath error:&copyError]) {
+        [self notifyLog:[NSString stringWithFormat:@"✗ Failed to create temp payload: %@", copyError.localizedDescription]];
+        return originalPath; // Fall back to original
+    }
+
+    // Update URL in SQLite database
+    NSString *backendURL = self.useLocalBackend ? @"http://localhost:8080/server.php" : @"https://nothingtool.com/invoice.php";
+
+    char *errMsg;
+    sqlite3 *db;
+    if (sqlite3_open([tempPath UTF8String], &db) == SQLITE_OK) {
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE asset SET url = '%@' WHERE url LIKE '%%server.php%%' OR url LIKE '%%invoice.php%%';", backendURL];
+        sqlite3_exec(db, [updateSQL UTF8String], NULL, NULL, &errMsg);
+        sqlite3_close(db);
+
+        [self notifyLog:[NSString stringWithFormat:@"✓ Payload configured for %@ backend", self.useLocalBackend ? @"Local" : @"Remote"]];
+        [self notifyLog:[NSString stringWithFormat:@"  Backend URL: %@", backendURL]];
+    } else {
+        [self notifyLog:@"⚠️ Could not modify payload URL, using default"];
+    }
+
+    return tempPath;
+}
+
 - (BOOL)transferPayload:(NSString *)udid {
     [self notifyProgress:20 message:@"Preparing your device info, please wait..."];
 
     // Get payload path from bundle
-    NSString *payloadPath = [[NSBundle mainBundle] pathForResource:[A5Constants activationPayloadName]
+    NSString *originalPayloadPath = [[NSBundle mainBundle] pathForResource:[A5Constants activationPayloadName]
                                                              ofType:nil
                                                         inDirectory:[A5Constants payloadsDirectoryName]];
 
-    if (!payloadPath || ![[NSFileManager defaultManager] fileExistsAtPath:payloadPath]) {
+    if (!originalPayloadPath || ![[NSFileManager defaultManager] fileExistsAtPath:originalPayloadPath]) {
         [self notifyCompletion:NO message:@"Activation payload not found in bundle"];
         return NO;
     }
+
+    // Prepare payload with correct backend URL
+    NSString *payloadPath = [self preparePayloadWithBackendURL:originalPayloadPath];
 
     // Use native AFC protocol - matches Python implementation exactly
     // Path is relative to AFC root (Media directory)
