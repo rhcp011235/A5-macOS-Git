@@ -12,6 +12,8 @@
 #import "A5BackendServer.h"
 #import "A5AFCClient.h"
 #import <sqlite3.h>
+#import <ifaddrs.h>
+#import <arpa/inet.h>
 
 @interface A5ActivationService ()
 
@@ -120,6 +122,42 @@
 }
 
 // Step 1: Transfer activation payload to device
+- (NSString *)getLocalIPAddress {
+    // Get Mac's IP address on WiFi/Ethernet network
+    NSString *address = nil;
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+
+    // Get list of all interfaces on local machine
+    if (getifaddrs(&interfaces) == 0) {
+        temp_addr = interfaces;
+
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                NSString *interfaceName = [NSString stringWithUTF8String:temp_addr->ifa_name];
+
+                // Check for WiFi (en0) or Ethernet (en1) or bridge100 (USB network)
+                if([interfaceName isEqualToString:@"en0"] ||  // WiFi
+                   [interfaceName isEqualToString:@"en1"] ||  // Ethernet
+                   [interfaceName hasPrefix:@"bridge"]) {     // USB network bridge
+
+                    char ipAddress[INET_ADDRSTRLEN];
+                    inet_ntop(AF_INET, &((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr, ipAddress, INET_ADDRSTRLEN);
+                    address = [NSString stringWithUTF8String:ipAddress];
+
+                    if (![address isEqualToString:@"127.0.0.1"]) {
+                        break; // Found valid IP
+                    }
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+
+    freeifaddrs(interfaces);
+    return address;
+}
+
 - (NSString *)preparePayloadWithBackendURL:(NSString *)originalPath {
     // Create temporary copy of payload with modified backend URL
     NSString *tempPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"A5_payload_modified.db"];
@@ -148,9 +186,18 @@
             break;
 
         case 2: // Local
-            // Use Mac.local instead of localhost - iOS can resolve this over USB network
-            backendURL = @"http://Mac.local:8080/server.php";
-            backendName = @"Local (USB)";
+            // Get Mac's WiFi IP address for local network access
+            // This works when both Mac and device are on same WiFi network
+            NSString *localIP = [self getLocalIPAddress];
+
+            if (localIP && ![localIP isEqualToString:@"127.0.0.1"]) {
+                backendURL = [NSString stringWithFormat:@"http://%@:8080/server.php", localIP];
+                backendName = [NSString stringWithFormat:@"Local - %@", localIP];
+            } else {
+                // Fallback to Mac.local
+                backendURL = @"http://Mac.local:8080/server.php";
+                backendName = @"Local - Mac.local";
+            }
             break;
 
         default:
