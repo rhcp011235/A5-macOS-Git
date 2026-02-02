@@ -132,9 +132,33 @@
         return originalPath; // Fall back to original
     }
 
-    // Update URL in SQLite database
-    NSString *backendURL = self.useLocalBackend ? @"http://localhost:8080/server.php" : @"https://nothingtool.com/invoice.php";
+    // Determine backend URL based on selection
+    NSString *backendURL;
+    NSString *backendName;
 
+    switch (self.backendServerType) {
+        case 0: // nothingtool.com
+            backendURL = @"https://nothingtool.com/invoice.php";
+            backendName = @"nothingtool.com";
+            break;
+
+        case 1: // mrcellphoneunlocker.com
+            backendURL = @"https://mrcellphoneunlocker.com/A5/invoice.php";
+            backendName = @"mrcellphoneunlocker.com";
+            break;
+
+        case 2: // Local
+            backendURL = @"http://localhost:8080/server.php";
+            backendName = @"Local";
+            break;
+
+        default:
+            backendURL = @"https://nothingtool.com/invoice.php";
+            backendName = @"nothingtool.com (default)";
+            break;
+    }
+
+    // Update URL in SQLite database
     char *errMsg;
     sqlite3 *db;
     if (sqlite3_open([tempPath UTF8String], &db) == SQLITE_OK) {
@@ -142,7 +166,7 @@
         sqlite3_exec(db, [updateSQL UTF8String], NULL, NULL, &errMsg);
         sqlite3_close(db);
 
-        [self notifyLog:[NSString stringWithFormat:@"✓ Payload configured for %@ backend", self.useLocalBackend ? @"Local" : @"Remote"]];
+        [self notifyLog:[NSString stringWithFormat:@"✓ Payload configured for %@ backend", backendName]];
         [self notifyLog:[NSString stringWithFormat:@"  Backend URL: %@", backendURL]];
     } else {
         [self notifyLog:@"⚠️ Could not modify payload URL, using default"];

@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 // State
 @property (assign, nonatomic) BOOL isProcessRunning;
 @property (assign, nonatomic) BOOL verboseLogging;
-@property (assign, nonatomic) BOOL useLocalBackend;
+@property (assign, nonatomic) NSInteger backendServerType; // 0=nothingtool, 1=mrcellphone, 2=local
 
 // Actions
 - (IBAction)activateButtonClicked:(id)sender;

@@ -204,11 +204,12 @@
     NSTextField *backendLabel = [self createLabel:@"Backend Server:" frame:NSMakeRect(margin, currentY + 2, 120, 18) bold:NO];
     [contentView addSubview:backendLabel];
 
-    self.backendSelector = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(margin + 130, currentY, 150, 26) pullsDown:NO];
-    [self.backendSelector addItemWithTitle:@"Remote (Online)"];
+    self.backendSelector = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(margin + 130, currentY, 200, 26) pullsDown:NO];
+    [self.backendSelector addItemWithTitle:@"nothingtool.com"];
+    [self.backendSelector addItemWithTitle:@"mrcellphoneunlocker.com"];
     [self.backendSelector addItemWithTitle:@"Local (Experimental)"];
-    [self.backendSelector selectItemAtIndex:0]; // Default to Remote (works 100%)
-    self.useLocalBackend = NO;
+    [self.backendSelector selectItemAtIndex:0]; // Default to nothingtool (works 100%)
+    self.backendServerType = 0;
     self.backendSelector.target = self;
     self.backendSelector.action = @selector(backendSelectorChanged:);
     [contentView addSubview:self.backendSelector];
@@ -531,17 +532,37 @@
 }
 
 - (IBAction)backendSelectorChanged:(id)sender {
-    self.useLocalBackend = (self.backendSelector.indexOfSelectedItem == 1); // Index 1 is Local
-    NSString *backend = self.useLocalBackend ? @"Local (Experimental)" : @"Remote (Online)";
-    [self addLog:[NSString stringWithFormat:@"Backend server set to: %@", backend] level:A5LogLevelInfo];
+    self.backendServerType = self.backendSelector.indexOfSelectedItem;
 
-    if (self.useLocalBackend) {
-        [self addLog:@"⚠️ WARNING: Local backend is experimental and may not work" level:A5LogLevelWarning];
-        [self addLog:@"⚠️ Known issue: Device may not connect to localhost through USB tunnel" level:A5LogLevelWarning];
-        [self addLog:@"💡 Recommended: Use Remote backend for guaranteed success" level:A5LogLevelInfo];
-    } else {
-        [self addLog:@"ℹ️ Remote backend requires device to have WiFi + internet access" level:A5LogLevelInfo];
+    NSString *serverName = @"";
+    NSString *serverURL = @"";
+
+    switch (self.backendServerType) {
+        case 0: // nothingtool.com
+            serverName = @"nothingtool.com";
+            serverURL = @"https://nothingtool.com/invoice.php";
+            [self addLog:[NSString stringWithFormat:@"Backend: %@ (Default)", serverName] level:A5LogLevelInfo];
+            [self addLog:@"ℹ️ Requires device WiFi + internet access" level:A5LogLevelInfo];
+            break;
+
+        case 1: // mrcellphoneunlocker.com
+            serverName = @"mrcellphoneunlocker.com";
+            serverURL = @"https://mrcellphoneunlocker.com/A5/invoice.php";
+            [self addLog:[NSString stringWithFormat:@"Backend: %@ (Your Server)", serverName] level:A5LogLevelInfo];
+            [self addLog:@"ℹ️ Requires device WiFi + internet access" level:A5LogLevelInfo];
+            break;
+
+        case 2: // Local
+            serverName = @"Local (Experimental)";
+            serverURL = @"http://localhost:8080/server.php";
+            [self addLog:[NSString stringWithFormat:@"Backend: %@", serverName] level:A5LogLevelInfo];
+            [self addLog:@"⚠️ WARNING: Local backend is experimental and may not work" level:A5LogLevelWarning];
+            [self addLog:@"⚠️ Known issue: Device may not connect through USB tunnel" level:A5LogLevelWarning];
+            [self addLog:@"💡 Recommended: Use remote server for guaranteed success" level:A5LogLevelInfo];
+            break;
     }
+
+    [self addLog:[NSString stringWithFormat:@"  URL: %@", serverURL] level:A5LogLevelInfo];
 }
 
 #pragma mark - Actions
@@ -573,8 +594,8 @@
 
     [self addLog:@"Starting activation process..." level:A5LogLevelInfo];
 
-    // Configure backend setting
-    self.activationService.useLocalBackend = self.useLocalBackend;
+    // Configure backend server selection
+    self.activationService.backendServerType = self.backendServerType;
 
     // Start activation
     [self.activationService activateDevice:self.currentDevice.udid];
