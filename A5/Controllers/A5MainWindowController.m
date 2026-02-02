@@ -205,14 +205,14 @@
     [contentView addSubview:backendLabel];
 
     self.backendSelector = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(margin + 130, currentY, 150, 26) pullsDown:NO];
-    [self.backendSelector addItemWithTitle:@"Local (Offline)"];
     [self.backendSelector addItemWithTitle:@"Remote (Online)"];
-    [self.backendSelector selectItemAtIndex:0]; // Default to Local
-    self.useLocalBackend = YES;
+    [self.backendSelector addItemWithTitle:@"Local (Experimental)"];
+    [self.backendSelector selectItemAtIndex:0]; // Default to Remote (works 100%)
+    self.useLocalBackend = NO;
     self.backendSelector.target = self;
     self.backendSelector.action = @selector(backendSelectorChanged:);
     [contentView addSubview:self.backendSelector];
-    currentY -= 35;
+    currentY -= 45; // More spacing before activate button
 
     // Activate button
     self.activateButton = [[A5GradientButton alloc] initWithFrame:NSMakeRect(margin, currentY, 220, 44)];
@@ -531,12 +531,16 @@
 }
 
 - (IBAction)backendSelectorChanged:(id)sender {
-    self.useLocalBackend = (self.backendSelector.indexOfSelectedItem == 0);
-    NSString *backend = self.useLocalBackend ? @"Local (Offline)" : @"Remote (Online)";
+    self.useLocalBackend = (self.backendSelector.indexOfSelectedItem == 1); // Index 1 is Local
+    NSString *backend = self.useLocalBackend ? @"Local (Experimental)" : @"Remote (Online)";
     [self addLog:[NSString stringWithFormat:@"Backend server set to: %@", backend] level:A5LogLevelInfo];
 
-    if (!self.useLocalBackend) {
-        [self addLog:@"⚠️ Remote backend requires device to have internet access via WiFi" level:A5LogLevelWarning];
+    if (self.useLocalBackend) {
+        [self addLog:@"⚠️ WARNING: Local backend is experimental and may not work" level:A5LogLevelWarning];
+        [self addLog:@"⚠️ Known issue: Device may not connect to localhost through USB tunnel" level:A5LogLevelWarning];
+        [self addLog:@"💡 Recommended: Use Remote backend for guaranteed success" level:A5LogLevelInfo];
+    } else {
+        [self addLog:@"ℹ️ Remote backend requires device to have WiFi + internet access" level:A5LogLevelInfo];
     }
 }
 
