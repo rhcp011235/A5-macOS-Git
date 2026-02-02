@@ -14,7 +14,7 @@
 
 @interface A5ActivationService ()
 
-@property (assign, nonatomic) BOOL isCancelled;
+@property (atomic) BOOL isCancelled;
 @property (strong, nonatomic) dispatch_queue_t activationQueue;
 @property (strong, nonatomic, nullable) A5BackendServer *backendServer;
 @property (strong, nonatomic, nullable) NSTask *iproxyTask;
@@ -169,7 +169,10 @@
         dispatch_semaphore_signal(semaphore);
     }];
 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    if (!success) {
+        [self stopPHPServer];
+    }
     return success;
 }
 
@@ -193,7 +196,10 @@
         dispatch_semaphore_signal(semaphore);
     }];
 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC));
+    if (!success) {
+        [self stopPHPServer];
+    }
     return success;
 }
 

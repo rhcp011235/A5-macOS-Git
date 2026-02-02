@@ -83,7 +83,7 @@
     // Open remote file for writing
     const char *remote_path = [remotePath UTF8String];
 
-    if (afc_file_open(afc, remote_path, AFC_FOPEN_WR, &file_handle) != AFC_E_SUCCESS) {
+    if (afc_file_open(afc, remote_path, AFC_FOPEN_WRONLY, &file_handle) != AFC_E_SUCCESS) {
         if (error) {
             *error = [NSError errorWithDomain:@"A5AFCClient"
                                         code:105
